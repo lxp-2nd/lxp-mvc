@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wanted.jjsbd.lxpmvc.common.domain.BaseTimeEntity;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 import java.time.LocalDateTime;
@@ -12,10 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "courses")
-// BaseTimeEntity를 상속받음으로써, createdAt과 updatedAt 필드를 묵시적으로 가지게 됩니다.
-// 기본 생성자의 접근 권한을 PROTECTED로 제한하여, 의미 없는 객체 생성(new Course())을 막고 JPA 프록시를 보장합니다.
+/// BaseTimeEntity를 상속받음으로써, createdAt 필드를 묵시적으로 가지게 됩니다.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Course {
+public class Course extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
