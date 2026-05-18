@@ -3,7 +3,7 @@ name: "♻️ Refactor"
 about: 동작 변경 없는 코드 구조 개선을 위한 이슈입니다.
 title: ''
 labels: refactor
-assignees: wlsh44
+assignees: 
 
 ---
 
