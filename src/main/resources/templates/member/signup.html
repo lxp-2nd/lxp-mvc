@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${title})}"></head>
+<body>
+<main class="auth-page">
+	<h1 class="page-label standalone">회원가입</h1>
+	<section class="auth-card">
+		<h2>LXP 회원가입</h2>
+		<form th:action="@{/signup}" th:object="${signupRequest}" method="post" class="form-stack" novalidate>
+			<label>이메일
+				<input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
+						th:attr="aria-invalid=${#fields.hasErrors('email')}">
+				<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일을 확인해주세요.</span>
+			</label>
+			<label>비밀번호
+				<input type="password" th:field="*{password}" placeholder="최소 8자 조건 충족"
+						autocomplete="new-password" required minlength="8"
+						th:attr="aria-invalid=${#fields.hasErrors('password')}">
+				<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">비밀번호를 확인해주세요.</span>
+			</label>
+			<label>이름
+				<input th:field="*{name}" placeholder="홍길동" autocomplete="name" required
+						th:attr="aria-invalid=${#fields.hasErrors('name')}">
+				<span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">이름을 입력해주세요.</span>
+			</label>
+			<button class="btn primary" type="submit">회원가입</button>
+		</form>
+		<p class="helper">이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
+	</section>
+</main>
+</body>
+</html>

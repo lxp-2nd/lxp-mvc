@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${title})}"></head>
+<body>
+<div th:replace="~{fragments/header :: appHeader(${title})}"></div>
+<main class="container">
+	<section class="section-heading">
+		<h1 th:text="${learning.courseTitle}">서비스 기획 MVP</h1>
+		<p>신청 완료된 강의의 섹션과 강의자료를 확인합니다.</p>
+	</section>
+
+	<section class="learning-layout">
+		<div class="player-panel">
+			<h2>선택한 강의자료</h2>
+			<div class="empty-player">
+				<strong>실제 콘텐츠 미제공</strong>
+				<span>MVP에서는 동영상/문서 유형만 표시합니다.</span>
+			</div>
+			<div class="button-row">
+				<button class="pill" type="button" th:text="'자료 유형: ' + ${selectedCourseMaterial.type}">자료 유형: 동영상</button>
+				<button class="pill" type="button" th:text="${selectedCourseMaterial.title}">자료명 표시</button>
+			</div>
+		</div>
+		<aside class="panel">
+			<h2>커리큘럼</h2>
+			<div class="curriculum compact" th:each="section, sectionStat : ${learning.sections}">
+				<h3 th:text="${section.title}">섹션 2. 핵심 개념</h3>
+				<a class="lesson"
+						th:each="courseMaterial, stat : ${section.courseMaterials}"
+						th:href="@{/learn/{id}(id=${learning.courseId}, sectionId=${sectionStat.index}, courseMaterialId=${stat.index})}">
+					<span th:text="${#numbers.formatInteger(stat.index + 1, 2) + '. ' + courseMaterial.title}">01. 강의자료 제목</span>
+					<em th:text="${courseMaterial.type}">동영상</em>
+				</a>
+			</div>
+		</aside>
+	</section>
+</main>
+</body>
+</html>
