@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import wanted.jjsbd.lxpmvc.cart.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberResponse;

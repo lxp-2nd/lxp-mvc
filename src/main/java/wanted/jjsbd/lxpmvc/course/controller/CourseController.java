@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import wanted.jjsbd.lxpmvc.cart.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.course.dto.CourseResponse;
 import wanted.jjsbd.lxpmvc.course.dto.CourseSearchRequest;
 

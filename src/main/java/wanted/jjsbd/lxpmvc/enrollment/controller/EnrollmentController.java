@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import wanted.jjsbd.lxpmvc.cart.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;

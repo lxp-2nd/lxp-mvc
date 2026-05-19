@@ -1,4 +1,4 @@
-package wanted.jjsbd.lxpmvc.cart.common;
+package wanted.jjsbd.lxpmvc.common;
 
 import java.util.List;
 import java.util.Set;
