@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -16,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
         /// 그래서 복합 유니크키를 걸어둔 거임.
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Section {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

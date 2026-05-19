@@ -6,13 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import wanted.jjsbd.lxpmvc.common.domain.BaseTimeEntity;
+import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 
 @Entity
 @Getter
 @Table(name = "materials")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Material extends BaseTimeEntity {
+public class Material extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

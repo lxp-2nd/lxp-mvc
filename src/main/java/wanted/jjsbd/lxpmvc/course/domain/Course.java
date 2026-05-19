@@ -5,17 +5,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wanted.jjsbd.lxpmvc.common.domain.BaseTimeEntity;
+import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "courses")
 /// BaseTimeEntity를 상속받음으로써, createdAt 필드를 묵시적으로 가지게 됩니다.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Course extends BaseTimeEntity {
+public class Course extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
