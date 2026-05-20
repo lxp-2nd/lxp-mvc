@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum MemberRole {
-
 	BASIC("ROLE_BASIC"),
 	INSTRUCTOR("ROLE_INSTRUCTOR"),
 	ADMIN("ROLE_ADMIN");
