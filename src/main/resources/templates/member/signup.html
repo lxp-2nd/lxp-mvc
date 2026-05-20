@@ -3,31 +3,109 @@
 <head th:replace="~{fragments/head :: head(${title})}"></head>
 <body>
 <main class="auth-page">
-    <h1 class="page-label standalone">회원가입</h1>
-    <section class="auth-card">
-        <h2>LXP 회원가입</h2>
-        <form th:action="@{/signup}" th:object="${signupRequest}" method="post" class="form-stack" novalidate>
-            <label>이메일
-                <input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
-                       th:attr="aria-invalid=${#fields.hasErrors('email')}">
-                <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일을 확인해주세요.</span>
-            </label>
-            <label>비밀번호
-                <input type="password" th:field="*{password}" placeholder="최소 8자 조건 충족"
-                       autocomplete="new-password" required minlength="8"
-                       th:attr="aria-invalid=${#fields.hasErrors('password')}">
-                <span class="field-error" th:if="${#fields.hasErrors('password')}"
-                      th:errors="*{password}">비밀번호를 확인해주세요.</span>
-            </label>
-            <label>이름
-                <input th:field="*{name}" placeholder="홍길동" autocomplete="name" required
-                       th:attr="aria-invalid=${#fields.hasErrors('name')}">
-                <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">이름을 입력해주세요.</span>
-            </label>
-            <button class="btn primary" type="submit">회원가입</button>
-        </form>
-        <p class="helper">이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
-    </section>
+	<h1 class="page-label standalone">회원가입</h1>
+	<section class="auth-card">
+		<h2>LXP 회원가입</h2>
+		<form th:action="@{/signup}" th:object="${signupRequest}" method="post" class="form-stack" novalidate>
+			<label>이메일
+				<input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
+						aria-invalid="false" aria-describedby="email-error"
+						data-error-required="이메일을 입력해주세요." data-error-invalid="올바른 이메일 형식으로 입력해주세요.">
+				<span id="email-error" class="field-error" aria-live="polite" th:text="${#fields.hasErrors('email')} ? ${#fields.errors('email')[0]} : ''"></span>
+			</label>
+			<label>이름
+				<input th:field="*{name}" placeholder="홍길동" autocomplete="name" required
+						aria-invalid="false" aria-describedby="name-error"
+						data-error-required="이름을 입력해주세요.">
+				<span id="name-error" class="field-error" aria-live="polite"></span>
+			</label>
+			<label>비밀번호
+				<input type="password" th:field="*{password}" placeholder="최소 4자, 최대 20자 이내 조건 충족"
+						autocomplete="new-password" required minlength="4" maxlength="20"
+						aria-invalid="false" aria-describedby="password-error"
+						data-error-required="비밀번호를 입력해주세요."
+						data-error-minlength="비밀번호는 최소 4자 이상 입력해주세요."
+						data-error-maxlength="비밀번호는 최대 20자까지 입력할 수 있습니다.">
+				<span id="password-error" class="field-error" aria-live="polite"></span>
+			</label>
+			<label>비밀번호 확인
+				<input type="password" th:field="*{passwordConfirm}" placeholder="최소 4자, 최대 20자 이내 조건 충족"
+						autocomplete="new-password" required minlength="4" maxlength="20"
+						aria-invalid="false" aria-describedby="passwordConfirm-error"
+						data-error-required="비밀번호 확인을 입력해주세요."
+						data-error-minlength="비밀번호 확인은 최소 4자 이상 입력해주세요."
+						data-error-maxlength="비밀번호 확인은 최대 20자까지 입력할 수 있습니다."
+						data-error-match="비밀번호가 일치하지 않습니다.">
+				<span id="passwordConfirm-error" class="field-error" aria-live="polite"></span>
+			</label>
+			<button class="btn primary" type="submit">회원가입</button>
+		</form>
+		<p class="helper">이미 계정이 있나요? <a th:href="@{/login}">로그인</a></p>
+	</section>
 </main>
+<script>
+	(() => {
+		const form = document.querySelector(".form-stack");
+		const password = form.querySelector("#password");
+		const passwordConfirm = form.querySelector("#passwordConfirm");
+
+		const setError = (field, message) => {
+			const error = document.getElementById(field.getAttribute("aria-describedby"));
+			field.setAttribute("aria-invalid", message ? "true" : "false");
+			error.textContent = message;
+		};
+
+		const getMessage = (field) => {
+			if (field.validity.valueMissing) {
+				return field.dataset.errorRequired;
+			}
+
+			if (field.validity.typeMismatch) {
+				return field.dataset.errorInvalid;
+			}
+
+			if (field.validity.tooShort) {
+				return field.dataset.errorMinlength;
+			}
+
+			if (field.validity.tooLong) {
+				return field.dataset.errorMaxlength;
+			}
+
+			if (field === passwordConfirm && field.value !== password.value) {
+				return field.dataset.errorMatch;
+			}
+
+			return "";
+		};
+
+		const validateField = (field) => {
+			const message = getMessage(field);
+			setError(field, message);
+			return !message;
+		};
+
+		form.querySelectorAll("input").forEach((field) => {
+			field.addEventListener("blur", () => validateField(field));
+			field.addEventListener("input", () => {
+				validateField(field);
+				if (field === password && passwordConfirm.value) {
+					validateField(passwordConfirm);
+				}
+			});
+		});
+
+		form.addEventListener("submit", (event) => {
+			const fields = [...form.querySelectorAll("input")];
+			const invalidFields = fields.filter((field) => !validateField(field));
+			const firstInvalid = invalidFields[0];
+
+			if (firstInvalid) {
+				event.preventDefault();
+				firstInvalid.focus();
+			}
+		});
+	})();
+</script>
 </body>
 </html>

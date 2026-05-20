@@ -26,6 +26,12 @@ public class EnrollmentController {
 		this.mockData = mockData;
 	}
 
+	/**
+	 * 수강신청 완료 화면 조회
+	 * @param courseId
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/enroll/complete")
 	public String enrollComplete(@RequestParam(required = false, defaultValue = "service-planning") String courseId,
 		Model model) {
@@ -38,12 +44,23 @@ public class EnrollmentController {
 		return "enrollment/complete";
 	}
 
+	/**
+	 * 강의상세 화면에서 단일 강의 수강 신청
+	 * @param courseId
+	 * @return
+	 */
 	@PostMapping("/courses/{courseId}/enroll")
 	public String enroll(@PathVariable String courseId) {
 		EnrollmentRequest request = new EnrollmentRequest(courseId);
 		return "redirect:/enroll/complete?courseId=" + request.courseId();
 	}
 
+	/**
+	 * 장바구니에서 선택한 강의 수강 신청
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@PostMapping("/cart/enroll")
 	public String enrollCart(CartEnrollmentRequest request, Model model) {
 		if (request.courseIds().isEmpty()) {
@@ -56,6 +73,11 @@ public class EnrollmentController {
 		return "redirect:/enroll/complete?courseId=" + courseId;
 	}
 
+	/**
+	 * 수강 목록 화면 조회
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/enrollment")
 	public String enrollment(Model model) {
 		EnrollmentResponse enrollment = mockData.enrollment();
@@ -66,6 +88,14 @@ public class EnrollmentController {
 		return "enrollment/list";
 	}
 
+	/**
+	 * 수강 상세 및 학습 화면 조회
+	 * @param sectionId
+	 * @param courseMaterialId
+	 * @param courseId
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/learn/{courseId}")
 	public String learn(
 		@RequestParam(required = false, defaultValue = "0") int sectionId,
