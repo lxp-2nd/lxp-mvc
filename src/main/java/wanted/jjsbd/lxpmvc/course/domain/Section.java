@@ -28,10 +28,6 @@ import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
         /// sequence만 유니크키를 걸어두면 문제점: ex) sequence 1로 저장을 하면 어느 강의테이블에서도 sequence 1 만들짐 못함
         /// 그래서 복합 유니크키를 걸어둔 거임.
 })
-/// 삭제 요청 시 DELETE 대신 UPDATE 쿼리 실행
-@SQLDelete(sql = "UPDATE courses SET deleted_at = NOW() WHERE id = ?")
-/// 조회 요청(SELECT) 시 항상 deletedAt = false 인 것만 가져오도록 필터링
-@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
 

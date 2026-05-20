@@ -24,10 +24,6 @@ import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 @Entity
 @Getter
 @Table(name = "materials")
-/// 삭제 요청 시 DELETE 대신 UPDATE 쿼리 실행
-@SQLDelete(sql = "UPDATE courses SET deleted_at = NOW() WHERE id = ?")
-/// 조회 요청(SELECT) 시 항상 deletedAt = false 인 것만 가져오도록 필터링
-@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Material extends BaseEntity {
 
