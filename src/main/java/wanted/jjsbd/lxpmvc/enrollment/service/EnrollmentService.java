@@ -1,6 +1,5 @@
 package wanted.jjsbd.lxpmvc.enrollment.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ public class EnrollmentService {
 	// private final CourseRepository courseRepository;
 	// private final MemberRepository memberRepository;
 
-
 	// 생성자 패턴(@Autowired 제거)
 	public EnrollmentService(EnrollmentRepository enrollmentRepository) {
 		this.enrollmentRepository = enrollmentRepository;
@@ -43,7 +41,7 @@ public class EnrollmentService {
 	public Long enroll(EnrollmentRequest request) {
 
 		// [비즈니스 로직] 중복 수강인지 확인
-		if(enrollmentRepository.existsByMemberIdAndCourseId(request.learnerId(), request.courseId())){
+		if (enrollmentRepository.existsByMemberIdAndCourseId(request.learnerId(), request.courseId())) {
 			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
 		}
 
@@ -54,7 +52,6 @@ public class EnrollmentService {
 		// memberRepository 구현 후 추후 추가 수정
 		// Member learner = memberRepository.findById(learnerId);
 		Member learner = new Member();
-
 
 		// 강의 조회
 		// courseRepository 구현 후 추후 추가 수정
@@ -74,6 +71,5 @@ public class EnrollmentService {
 			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
 		}
 	}
-
 
 }

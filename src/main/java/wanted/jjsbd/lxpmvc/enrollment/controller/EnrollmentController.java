@@ -13,7 +13,6 @@ import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
-import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
@@ -65,7 +64,7 @@ public class EnrollmentController {
 		@SessionAttribute(name = "loginMember", required = true) Member loginMember
 	) {
 
-		try{
+		try {
 			// 1. 로그인 사용자인지 확인후 비로그인인 경우 login 화면으로 redirect
 			DomainValidator.validateNotNull(loginMember);
 			// 1-1. member객체의 ID값이 Long인지 확인 -> 미구현 사항(5/20)
@@ -74,7 +73,6 @@ public class EnrollmentController {
 			// 2. courseId가 null인지에 대해 확인
 			DomainValidator.validateNotBlank(courseId);
 			// 여기 분기의 경우에는 1의 경우 로그인으로, 2의 경우 원래 강의상세 페이지에 두면 될듯합니다.
-
 
 			EnrollmentRequest request = new EnrollmentRequest(1L, Long.valueOf(courseId));
 			enrollmentService.enroll(request);
