@@ -12,6 +12,7 @@ import wanted.jjsbd.lxpmvc.member.domain.Member;
 @Controller
 public class CartController {
 
+	// 팀원이랑 LOGIN_REDIRECT 등 상수로 둘건지 상의 후 수정 예정
 	private static final String CART_TITLE = "장바구니";
 	private static final String LOGIN_REDIRECT = "redirect:/login";
 	private static final String CART_VIEW = "cart/index";
@@ -22,7 +23,7 @@ public class CartController {
 		this.cartService = cartService;
 	}
 
-	// 로그인한 회원의 장바구니 화면을 조회한다.
+	// 로그인한 회원의 장바구니 화면을 조회
 	@GetMapping("/cart")
 	public String cart(@SessionAttribute(name = "loginMember", required = false) Member loginMember, Model model) {
 		if (loginMember == null) {
@@ -35,7 +36,6 @@ public class CartController {
 		model.addAttribute("cart", cart);
 		model.addAttribute("cartItems", cart.cartItems());
 
-		// cart/index 으로 하드코딩할건지 팀원이랑 협의 필요.
 		return CART_VIEW;
 	}
 }
