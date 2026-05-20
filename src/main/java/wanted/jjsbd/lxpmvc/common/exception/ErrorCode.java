@@ -21,7 +21,7 @@ public enum ErrorCode {
 	ENROLLMENT_SELECTION_REQUIRED(HttpStatus.BAD_REQUEST, "ENROLL_001", "신청할 강의를 선택해주세요."),
 	ENROLLMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "ENROLL_002", "이미 신청한 강의입니다."),
 	ENROLLMENT_ALREADY_EXISTS_SKIPPED(HttpStatus.CONFLICT, "ENROLL_003", "이미 신청한 강의는 신청 처리되지 않았습니다."),
-	ENROLLMENT_PARTIAL_SUCCESS(HttpStatus.CONFLICT, "ENROLL_004", "일부 강의만 신청되었습니다. 신청할 수 없는 강의는 장바구니에 남아 있습니다."),
+	ENROLLMENT_PARTIAL_CONFLICT(HttpStatus.CONFLICT, "ENROLL_004", "일부 강의만 신청되었습니다. 신청할 수 없는 강의는 장바구니에 남아 있습니다."),
 	ENROLLMENT_CANCEL_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ENROLL_005", "본인이 신청한 강의만 취소할 수 있습니다."),
 	ENROLLMENT_ALREADY_CANCELLED(HttpStatus.CONFLICT, "ENROLL_006", "이미 취소된 신청입니다."),
 	ENROLLMENT_EMPTY(HttpStatus.NOT_FOUND, "ENROLL_007", "신청 완료한 강의가 없습니다."),

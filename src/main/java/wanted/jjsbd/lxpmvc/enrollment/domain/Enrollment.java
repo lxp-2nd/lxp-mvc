@@ -21,7 +21,7 @@ import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity(name = "enrollment")
 @Table(
-	name = "enrollment",
+	name = "enrollments",
 	uniqueConstraints = {
 		@UniqueConstraint(
 			name = "uk_member_course",
@@ -34,19 +34,19 @@ public class Enrollment extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "enrollment_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id", nullable = false)
-	private Member member;
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member learner;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id", nullable = false)
+	@JoinColumn(name = "course_id", nullable = false)
 	private Course course;
 
 	private Enrollment(Member member, Course course) {
-		this.member = member;
+		this.learner = member;
 		this.course = course;
 	}
 
@@ -65,17 +65,4 @@ public class Enrollment extends BaseEntity {
 		Enrollment enrollment = new Enrollment(member, course);
 		return enrollment;
 	}
-
-	@Override
-	public void delete() {
-		super.delete();
-		// 수강 삭제시 필요 비즈니스 로직 있을 때 활용
-	}
-
-	/*
-	// JUnit Test 코드
-	public int add(int num1, int num2) {
-		return num1 + num2;
-	}
- */
 }
