@@ -2,9 +2,12 @@ package wanted.jjsbd.lxpmvc.member.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.validation.Valid;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
@@ -28,7 +31,11 @@ public class MemberController {
 	}
 
 	@PostMapping("/login")
-	public String doLogin(LoginRequest request) {
+	public String doLogin(@Valid @ModelAttribute("loginRequest") LoginRequest request,
+		BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "member/login";
+		}
 		return "redirect:/courses";
 	}
 
