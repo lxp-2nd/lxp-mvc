@@ -7,6 +7,8 @@ public record CourseResponse(
 	String title, /// 강의명
 	String instructor,
 	String description,
+
 	List<SectionResponse> curriculum ///하위 커리큘럼(섹션+자료) 목록
+
 ) {
 }

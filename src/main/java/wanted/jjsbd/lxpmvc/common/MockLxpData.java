@@ -31,17 +31,17 @@ public class MockLxpData {
 	public List<CourseResponse> courses() {
 		return List.of(
 			new CourseResponse("frontend-basic", "프론트엔드 입문", "강사명", "HTML, CSS, JavaScript 기초를 다룹니다.",
-				curriculum()),
+				curriculum(), 1),
 			new CourseResponse("data-analysis", "데이터 분석 기초", "강사명", "비즈니스 데이터를 읽고 시각화하는 방법을 익힙니다.",
-				curriculum()),
+				curriculum(), 4),
 			new CourseResponse("service-planning", "서비스 기획 MVP", "강사명", "서비스 기획과 MVP 화면 설계를 학습합니다.",
-				curriculum()),
+				curriculum(), 6),
 			new CourseResponse("backend-api", "백엔드 API 설계", "강사명", "REST API와 서버 설계 흐름을 정리합니다.",
-				curriculum()),
+				curriculum(), 33),
 			new CourseResponse("ux-research", "UX 리서치 시작하기", "강사명", "사용자 인터뷰와 리서치 결과 정리를 연습합니다.",
-				curriculum()),
+				curriculum(), 2),
 			new CourseResponse("sql-basic", "SQL 기본", "강사명", "데이터 조회와 집계에 필요한 SQL 기본기를 배웁니다.",
-				curriculum()));
+				curriculum(), 0));
 	}
 
 	public List<CourseResponse> cartCourses() {
