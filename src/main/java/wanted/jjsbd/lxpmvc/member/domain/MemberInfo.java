@@ -23,8 +23,7 @@ public record MemberInfo(
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		String roleName = role.name().startsWith("ROLE_") ? role.name() : "ROLE_" + role.name();
-		return List.of(new SimpleGrantedAuthority(roleName));
+		return List.of(new SimpleGrantedAuthority(role.getSecurityCode()));
 	}
 
 	public String getEmail() {
