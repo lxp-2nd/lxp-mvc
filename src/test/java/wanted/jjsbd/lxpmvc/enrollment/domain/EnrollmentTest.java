@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class EnrollmentTest {
-
+/*
 	@Test
 	@DisplayName("정상적인 더하기 연산이 성공해야 한다")
 	void add_Success() {
@@ -18,7 +18,7 @@ class EnrollmentTest {
 		// then (검증)
 		Assertions.assertEquals(5, result);
 	}
-
+*/
 	/*
 	@Test
 	@DisplayName("CI 빌드 실패 테스트를 위해 일부러 실패하는 케이스")

@@ -65,7 +65,8 @@ public class MemberController {
 	@GetMapping("/signup")
 	public String signup(Model model) {
 		model.addAttribute("title", "회원가입");
-		model.addAttribute("signupRequest", new SignupRequest("", "", ""));
+		model.addAttribute("signupRequest",
+			new SignupRequest("", "", "", ""));
 		return "member/signup";
 	}
 
