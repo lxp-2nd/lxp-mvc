@@ -1,6 +1,7 @@
 package wanted.jjsbd.lxpmvc.common.exception;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;	
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -25,17 +26,20 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-    public String handleValidationException(MethodArgumentNotValidException e, RedirectAttributes redirectAttributes) {
-        try {
-            String errorTarget = e.getBindingResult().getFieldError().getDefaultMessage();
-            ErrorCode errorCode = ErrorCode.valueOf(errorTarget); 
-            redirectAttributes.addAttribute("error", true);
-            redirectAttributes.addAttribute("message", errorCode.getMessage()); 
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-            redirectAttributes.addAttribute("error", true);
-            redirectAttributes.addAttribute("message", ErrorCode.INVALID_INPUT.getMessage());
-        }
-        return "redirect:/login";
-    }
+	public String handleValidationException(MethodArgumentNotValidException e, RedirectAttributes redirectAttributes) {
+		try {
+			FieldError fieldError = e.getBindingResult().getFieldError();
+			String errorTarget = (fieldError != null && fieldError.getDefaultMessage() != null)
+				? fieldError.getDefaultMessage()
+				: "INVALID_INPUT";
+			ErrorCode errorCode = ErrorCode.valueOf(errorTarget);
+			redirectAttributes.addAttribute("error", true);
+			redirectAttributes.addAttribute("message", errorCode.getMessage());
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			redirectAttributes.addAttribute("error", true);
+			redirectAttributes.addAttribute("message", ErrorCode.INVALID_INPUT.getMessage());
+		}
+		return "redirect:/login";
+	}
 }
