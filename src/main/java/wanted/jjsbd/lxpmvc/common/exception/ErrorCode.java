@@ -15,9 +15,20 @@ public enum ErrorCode {
 
 	// Member
 
-	// Course
+    // Course
+    COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
+    COURSE_INSTRUCTOR_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_002", "강사 정보는 필수입니다."),
 
-	// Enrollment
+    SECTION_COURSE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_001", "소속된 강의 정보는 필수입니다."),
+    SECTION_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_002", "섹션 제목은 필수/비어있을 수 없습니다."),
+    SECTION_SEQUENCE_INVALID(HttpStatus.BAD_REQUEST, "SECTION_003", "섹션 순서는 1 이상의 유효한 값이어야 합니다."),
+
+    MATERIAL_SECTION_REQUIRED(HttpStatus.BAD_REQUEST, "MATERIAL_001", "소속된 섹션 정보는 필수입니다."),
+    MATERIAL_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "MATERIAL_002", "강의자료 제목은 필수/비어있을 수 없습니다."),
+    MATERIAL_TYPE_REQUIRED(HttpStatus.BAD_REQUEST, "MATERIAL_003", "자료 유형(VIDEO/DOCUMENT)은 필수입니다."),
+    MATERIAL_SEQUENCE_INVALID(HttpStatus.BAD_REQUEST, "MATERIAL_004", "자료 순서는 1 이상의 유효한 값이어야 합니다.");
+
+    // Enrollment
 
 	// Cart
 	;
