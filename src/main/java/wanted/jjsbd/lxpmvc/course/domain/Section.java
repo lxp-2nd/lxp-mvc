@@ -1,23 +1,9 @@
 package wanted.jjsbd.lxpmvc.course.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.UniqueConstraint;
-
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
@@ -32,6 +18,8 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
+
+    private static final int MINIMUM_SEQUENCE = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,7 +60,7 @@ public class Section extends BaseEntity {
         if (title == null || title.isBlank()) {
             throw new CustomException(ErrorCode.SECTION_TITLE_REQUIRED);
         }
-        if (sequence == null || sequence < 1) {
+        if (sequence == null || sequence < MINIMUM_SEQUENCE) {
             throw new CustomException(ErrorCode.SECTION_SEQUENCE_INVALID);
         }
     }
