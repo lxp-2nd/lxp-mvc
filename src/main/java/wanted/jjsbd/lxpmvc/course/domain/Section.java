@@ -44,7 +44,7 @@ public class Section extends BaseEntity {
 
     public static Section createSection(Course course, String title, Integer sequence) {
         if (course == null) {
-            throw new IllegalArgumentException("소속된 강의 정보는 필수입니다.");
+            throw new CustomException(ErrorCode.SECTION_COURSE_REQUIRED);
         }
         validateSection(title, sequence);
         return new Section(course, title, sequence);

@@ -41,9 +41,8 @@ public class Course extends BaseEntity {
     public static Course createCourse(Member instructor, String title, String description) {
         validateCourseTitle(title);
         if (instructor == null) {
-            throw new IllegalArgumentException("강사 정보는 필수입니다.");
+            throw new CustomException(ErrorCode.COURSE_INSTRUCTOR_REQUIRED);
         }
-
         return new Course(instructor, title, description);
     }
 
