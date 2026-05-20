@@ -3,25 +3,26 @@
 <head th:replace="~{fragments/head :: head(${title})}"></head>
 <body>
 <main class="auth-page">
-	<h1 class="page-label standalone">로그인</h1>
-	<section class="auth-card">
-		<h2>LXP 로그인</h2>
-		<form th:action="@{/login}" th:object="${loginRequest}" method="post" class="form-stack" novalidate>
-			<label>이메일
-				<input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
-						th:attr="aria-invalid=${#fields.hasErrors('email')}">
-				<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일을 확인해주세요.</span>
-			</label>
-			<label>비밀번호
-				<input type="password" th:field="*{password}" placeholder="비밀번호 입력"
-						autocomplete="current-password" required
-						th:attr="aria-invalid=${#fields.hasErrors('password')}">
-				<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">비밀번호를 입력해주세요.</span>
-			</label>
-			<button class="btn primary" type="submit">로그인</button>
-		</form>
-		<p class="helper">계정이 없나요? <a th:href="@{/signup}">회원가입</a></p>
-	</section>
+    <h1 class="page-label standalone">로그인</h1>
+    <section class="auth-card">
+        <h2>LXP 로그인</h2>
+        <form th:action="@{/login}" th:object="${loginRequest}" method="post" class="form-stack" novalidate>
+            <label>이메일
+                <input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
+                       th:attr="aria-invalid=${#fields.hasErrors('email')}">
+                <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일을 확인해주세요.</span>
+            </label>
+            <label>비밀번호
+                <input type="password" th:field="*{password}" placeholder="비밀번호 입력"
+                       autocomplete="current-password" required
+                       th:attr="aria-invalid=${#fields.hasErrors('password')}">
+                <span class="field-error" th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}">비밀번호를 입력해주세요.</span>
+            </label>
+            <button class="btn primary" type="submit">로그인</button>
+        </form>
+        <p class="helper">계정이 없나요? <a th:href="@{/signup}">회원가입</a></p>
+    </section>
 </main>
 </body>
 </html>

@@ -11,6 +11,7 @@ checkstyle {
     configFile = file("${rootDir}/config/checkstyle/naver-checkstyle-rules.xml")
     // 예외 처리 파일 경로도 함께 변경
     configProperties = ["suppressionFile": file("${rootDir}/config/checkstyle/naver-checkstyle-suppressions.xml")]
+    maxWarnings = 0
     ignoreFailures = false
 }
 
