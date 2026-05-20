@@ -19,6 +19,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity
@@ -50,25 +52,23 @@ public class Course extends BaseEntity {
     }
     /// 2. 정적 팩토리 메서드 (Static Factory Method)
     public static Course createCourse(Member instructor, String title, String description) {
-        // 객체 생성 시점에 필요한 비즈니스 검증(Validation)을 여기서 처리할 수 있습니다.
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("강의 제목은 필수입니다.");
-        }
+        validateCourseTitle(title);
+
         if (instructor == null) {
             throw new IllegalArgumentException("강사 정보는 필수입니다.");
         }
 
         return new Course(instructor, title, description);
     }
-    /**
-     * [비즈니스 메서드 - 강의 정보 수정]
-     * 외부에서 setter로 값을 마구잡이로 바꾸는 게 아니라, 의도가 명확한 메서드를 통해 데이터를 변경합니다.
-     */
+
     public void updateInfo(String title, String description) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("강의 제목은 비어있을 수 없습니다.");
-        }
+        validateCourseTitle(title);
         this.title = title;
         this.description = description;
+    }
+    private static void validateCourseTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new CustomException(ErrorCode.COURSE_TITLE_REQUIRED);
+        }
     }
 }

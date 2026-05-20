@@ -20,6 +20,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -60,35 +62,30 @@ public class Material extends BaseEntity {
 
     public static Material createMaterial(Section section, String title, MaterialType materialType, String contentUrl, Integer sequence) {
         if (section == null) {
-            throw new IllegalArgumentException("소속된 섹션 정보는 필수입니다.");
+            throw new CustomException(ErrorCode.MATERIAL_SECTION_REQUIRED);
         }
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("강의자료 제목은 필수입니다.");
-        }
-        if (materialType == null) {
-            throw new IllegalArgumentException("자료 유형(VIDEO/DOCUMENT)은 필수입니다.");
-        }
-        if (sequence == null || sequence < 1) {
-            throw new IllegalArgumentException("순서는 1 이상의 유효한 값이어야 합니다.");
-        }
+        validateMaterialFields(title, materialType, sequence);
 
         return new Material(section, title, materialType, contentUrl, sequence);
     }
 
     public void updateMaterial(String title, MaterialType materialType, String contentUrl, Integer sequence) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("강의자료 제목은 비어있을 수 없습니다.");
-        }
-        if (materialType == null) {
-            throw new IllegalArgumentException("자료 유형은 필수입니다.");
-        }
-        if (sequence == null || sequence < 1) {
-            throw new IllegalArgumentException("순서는 1 이상의 유효한 값이어야 합니다.");
-        }
-
+        validateMaterialFields(title, materialType, sequence);
         this.title = title;
         this.materialType = materialType;
         this.contentUrl = contentUrl;
         this.sequence = sequence;
+    }
+
+    private static void validateMaterialFields(String title, MaterialType materialType, Integer sequence) {
+        if (title == null || title.isBlank()) {
+            throw new CustomException(ErrorCode.MATERIAL_TITLE_REQUIRED);
+        }
+        if (materialType == null) {
+            throw new CustomException(ErrorCode.MATERIAL_TYPE_REQUIRED);
+        }
+        if (sequence == null || sequence < 1) {
+            throw new CustomException(ErrorCode.MATERIAL_SEQUENCE_INVALID);
+        }
     }
 }

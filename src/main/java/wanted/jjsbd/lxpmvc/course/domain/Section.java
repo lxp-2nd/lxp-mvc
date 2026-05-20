@@ -19,6 +19,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -56,24 +58,22 @@ public class Section extends BaseEntity {
         if (course == null) {
             throw new IllegalArgumentException("소속된 강의 정보는 필수입니다.");
         }
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("섹션 제목은 필수입니다.");
-        }
-        if (sequence == null || sequence < 1) {
-            throw new IllegalArgumentException("순서는 1 이상의 유효한 값이어야 합니다.");
-        }
+        validateSection(title, sequence);
         return new Section(course, title, sequence);
     }
 
     public void updateSection(String title, Integer sequence) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("섹션 제목은 비어있을 수 없습니다.");
-        }
-        if (sequence == null || sequence < 1) {
-            throw new IllegalArgumentException("순서는 1 이상의 유효한 값이어야 합니다.");
-        }
-
+        validateSection(title, sequence);
         this.title = title;
         this.sequence = sequence;
+    }
+
+    private static void validateSection(String title, Integer sequence) {
+        if (title == null || title.isBlank()) {
+            throw new CustomException(ErrorCode.SECTION_TITLE_REQUIRED);
+        }
+        if (sequence == null || sequence < 1) {
+            throw new CustomException(ErrorCode.SECTION_SEQUENCE_INVALID);
+        }
     }
 }
