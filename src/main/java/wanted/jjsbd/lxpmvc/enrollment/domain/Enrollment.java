@@ -46,12 +46,7 @@ public class Enrollment extends BaseEntity {
 
 	// 수강 도메인 생성(정적 팩토리 메서드)
 	public static Enrollment createEnrollment(Member member, Course course) {
-		if (member == null) {
-			// 추후 에러코드 변경 시 수정 예정
-			throw new CustomException(ErrorCode.INVALID_INPUT);
-		}
-
-		if (course == null) {
+		if (member == null || course == null) {
 			// 추후 에러코드 변경 시 수정 예정
 			throw new CustomException(ErrorCode.INVALID_INPUT);
 		}

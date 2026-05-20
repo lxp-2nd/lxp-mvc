@@ -1,14 +1,19 @@
 package wanted.jjsbd.lxpmvc.enrollment.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
@@ -16,14 +21,19 @@ import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningResponse;
+import wanted.jjsbd.lxpmvc.enrollment.service.EnrollmentService;
+import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Controller
 public class EnrollmentController {
 
+	private final EnrollmentService enrollmentService;
 	private final MockLxpData mockData;
 
-	public EnrollmentController(MockLxpData mockData) {
+	@Autowired
+	public EnrollmentController(MockLxpData mockData, EnrollmentService enrollmentService) {
 		this.mockData = mockData;
+		this.enrollmentService = enrollmentService;
 	}
 
 	/**
@@ -50,9 +60,32 @@ public class EnrollmentController {
 	 * @return
 	 */
 	@PostMapping("/courses/{courseId}/enroll")
-	public String enroll(@PathVariable String courseId) {
-		EnrollmentRequest request = new EnrollmentRequest(courseId);
-		return "redirect:/enroll/complete?courseId=" + request.courseId();
+	public String enroll(
+		@PathVariable String courseId,
+		@SessionAttribute(name = "loginMember", required = true) Member loginMember
+	) {
+
+		try{
+			// 1. 로그인 사용자인지 확인후 비로그인인 경우 login 화면으로 redirect
+			DomainValidator.validateNotNull(loginMember);
+			// 1-1. member객체의 ID값이 Long인지 확인 -> 미구현 사항(5/20)
+			// DomainValidator.validateNotNull(loginMember.getId());
+
+			// 2. courseId가 null인지에 대해 확인
+			DomainValidator.validateNotBlank(courseId);
+			// 여기 분기의 경우에는 1의 경우 로그인으로, 2의 경우 원래 강의상세 페이지에 두면 될듯합니다.
+
+
+			EnrollmentRequest request = new EnrollmentRequest(1L, Long.valueOf(courseId));
+			enrollmentService.enroll(request);
+
+			return "redirect:/enrollment/complete?courseId=" + request.courseId();
+		} catch (CustomException e) {
+			// 로그인으로 분기에 대한 것을 기준 잡기가 애매함..
+			return "redirect:/member/login";
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -70,7 +103,7 @@ public class EnrollmentController {
 		}
 
 		String courseId = request.courseIds().get(0);
-		return "redirect:/enroll/complete?courseId=" + courseId;
+		return "redirect:/enrollment/complete?courseId=" + courseId;
 	}
 
 	/**
