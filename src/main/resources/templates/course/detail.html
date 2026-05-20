@@ -4,41 +4,41 @@
 <body>
 <div th:replace="~{fragments/header :: appHeader(${title})}"></div>
 <main class="container">
-	<section class="detail-hero">
-		<div class="large-thumb">강의 썸네일</div>
-		<div class="detail-copy">
-			<h1 th:text="${course.title}">서비스 기획 MVP</h1>
-			<p th:text="${course.description}">강의 설명 영역. 강의 목표를 확인한다.</p>
-			<p class="muted">강사: <span th:text="${course.instructor}">강사명</span></p>
-			<div class="button-row">
-				<form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
-					<button class="btn primary" type="submit">바로 신청</button>
-				</form>
-				<form th:action="@{/courses/{id}/cart(id=${course.id})}" method="post">
-					<button class="btn ghost" type="submit">장바구니 담기</button>
-				</form>
-			</div>
-		</div>
-	</section>
+    <section class="detail-hero">
+        <div class="large-thumb">강의 썸네일</div>
+        <div class="detail-copy">
+            <h1 th:text="${course.title}">서비스 기획 MVP</h1>
+            <p th:text="${course.description}">강의 설명 영역. 강의 목표를 확인한다.</p>
+            <p class="muted">강사: <span th:text="${course.instructor}">강사명</span></p>
+            <div class="button-row">
+                <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
+                    <button class="btn primary" type="submit">바로 신청</button>
+                </form>
+                <form th:action="@{/courses/{id}/cart(id=${course.id})}" method="post">
+                    <button class="btn ghost" type="submit">장바구니 담기</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
-	<section class="two-column">
-		<div class="panel">
-			<h2>커리큘럼</h2>
-			<div class="curriculum" th:each="section, sectionStat : ${course.curriculum}">
-					<h3 th:text="${section.title}">섹션 1. 강의 소개</h3>
-					<a class="lesson"
-							th:each="lesson, stat : ${section.lessons}"
-							th:href="@{/learn/{id}(id=${course.id}, sectionId=${sectionStat.index}, courseMaterialId=${stat.index})}">
-						<span th:text="${#numbers.formatInteger(stat.index + 1, 2) + '. ' + lesson.title}">01. 강의자료 제목</span>
-						<em th:text="${lesson.type}">동영상</em>
-					</a>
-			</div>
-		</div>
-		<div class="panel">
-			<h2>강사 정보</h2>
-			<p>강사명, 소개, 주요 경력 또는 전문 분야가 표시됩니다.</p>
-		</div>
-	</section>
+    <section class="two-column">
+        <div class="panel">
+            <h2>커리큘럼</h2>
+            <div class="curriculum" th:each="section, sectionStat : ${course.curriculum}">
+                <h3 th:text="${section.title}">섹션 1. 강의 소개</h3>
+                <a class="lesson"
+                   th:each="lesson, stat : ${section.lessons}"
+                   th:href="@{/learn/{id}(id=${course.id}, sectionId=${sectionStat.index}, courseMaterialId=${stat.index})}">
+                    <span th:text="${#numbers.formatInteger(stat.index + 1, 2) + '. ' + lesson.title}">01. 강의자료 제목</span>
+                    <em th:text="${lesson.type}">동영상</em>
+                </a>
+            </div>
+        </div>
+        <div class="panel">
+            <h2>강사 정보</h2>
+            <p>강사명, 소개, 주요 경력 또는 전문 분야가 표시됩니다.</p>
+        </div>
+    </section>
 </main>
 </body>
 </html>

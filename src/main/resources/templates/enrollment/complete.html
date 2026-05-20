@@ -4,15 +4,17 @@
 <body>
 <div th:replace="~{fragments/header :: appHeader(${title})}"></div>
 <main class="container centered">
-	<section class="complete-card">
-		<h1>강의 신청이 완료되었습니다</h1>
-		<p>신청 완료된 강의는 수강 목록에서 확인할 수 있습니다.</p>
-		<div class="complete-summary" th:text="${enrollment.courseTitle} + ' · ' + ${enrollment.statusText}">서비스 기획 MVP · 신청완료</div>
-		<div class="button-row">
-			<a class="btn primary" th:href="@{/courses}">돌아가기</a>
-			<a class="btn ghost" th:href="@{/enrollment}">수강 목록으로 이동</a>
-		</div>
-	</section>
+    <section class="complete-card">
+        <h1>강의 신청이 완료되었습니다</h1>
+        <p>신청 완료된 강의는 수강 목록에서 확인할 수 있습니다.</p>
+        <div class="complete-summary" th:text="${enrollment.courseTitle} + ' · ' + ${enrollment.statusText}">서비스 기획 MVP
+            · 신청완료
+        </div>
+        <div class="button-row">
+            <a class="btn primary" th:href="@{/courses}">돌아가기</a>
+            <a class="btn ghost" th:href="@{/enrollment}">수강 목록으로 이동</a>
+        </div>
+    </section>
 </main>
 </body>
 </html>

@@ -10,15 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
-	public String handleCustomException(CustomException e) {
-		ErrorCode errorCode = e.getErrorCode();
+	public String handleCustomException(CustomException ex) {
+		ErrorCode errorCode = ex.getErrorCode();
 		log.debug(errorCode.toString());
 		return "error/error";
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String handleException(Exception e) {
-		log.error(e.getMessage(), e);
+	public String handleException(Exception ex) {
+		log.error(ex.getMessage(), ex);
 		return "/";
 	}
 }
