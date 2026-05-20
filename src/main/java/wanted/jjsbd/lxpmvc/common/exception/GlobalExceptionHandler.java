@@ -19,12 +19,6 @@ public class GlobalExceptionHandler {
 		return "error/error";
 	}
 
-	@ExceptionHandler(Exception.class)
-	public String handleException(Exception e) {
-		log.error(e.getMessage(), e);
-		return "/";
-	}
-
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public String handleValidationException(MethodArgumentNotValidException e, RedirectAttributes redirectAttributes) {
 		try {
@@ -41,5 +35,11 @@ public class GlobalExceptionHandler {
 			redirectAttributes.addAttribute("message", ErrorCode.INVALID_INPUT.getMessage());
 		}
 		return "redirect:/login";
+	}
+
+	@ExceptionHandler(Exception.class)
+	public String handleException(Exception e) {
+		log.error(e.getMessage(), e);
+		return "/";
 	}
 }
