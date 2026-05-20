@@ -15,19 +15,21 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.member.domain.MemberInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
-import wanted.jjsbd.lxpmvc.member.dto.MemberInfo;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberResponse;
 import wanted.jjsbd.lxpmvc.member.dto.SignupRequest;
+import wanted.jjsbd.lxpmvc.member.service.MemberService;
 
 @Controller
 public class MemberController {
-
 	private final MockLxpData mockData;
+	private final MemberService memberService;
 
-	public MemberController(MockLxpData mockData) {
+	public MemberController(MockLxpData mockData, MemberService memberService) {
 		this.mockData = mockData;
+		this.memberService = memberService;
 	}
 
 	@GetMapping("/login")
@@ -45,13 +47,10 @@ public class MemberController {
 		}
 		try {
 			MemberInfo memberInfo = memberService.login(request.email(), request.password());
-
 			UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(memberInfo.getEmail(), null, memberInfo.getAuthorities());
-
+				new UsernamePasswordAuthenticationToken(memberInfo, null, memberInfo.getAuthorities());
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authenticationToken);
-
 			HttpSession session = servletRequest.getSession(true);
 			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 			session.setMaxInactiveInterval(240 * 60);
