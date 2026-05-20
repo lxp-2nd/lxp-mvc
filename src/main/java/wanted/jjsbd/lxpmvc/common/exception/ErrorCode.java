@@ -19,7 +19,7 @@ public enum ErrorCode {
     INVALID_NUMBER_RANGE(HttpStatus.BAD_REQUEST, "COMMON_004", "유효하지 않은 숫자 범위입니다. (1 이상의 값이어야 합니다.)"),
 
     // 3. Common - Resource
-    EMPTY_LIST(HttpStatus.NOT_FOUND, "COMMON_007", "조회할 내역이 없습니다."),
+    EMPTY_LIST(HttpStatus.BAD_REQUEST, "COMMON_005", "목록이 비어 있습니다"),
 
 	// Course
 
