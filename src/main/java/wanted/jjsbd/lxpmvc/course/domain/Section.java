@@ -1,11 +1,23 @@
 package wanted.jjsbd.lxpmvc.course.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.UniqueConstraint;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 
 @Entity
@@ -16,6 +28,10 @@ import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
         /// sequence만 유니크키를 걸어두면 문제점: ex) sequence 1로 저장을 하면 어느 강의테이블에서도 sequence 1 만들짐 못함
         /// 그래서 복합 유니크키를 걸어둔 거임.
 })
+/// 삭제 요청 시 DELETE 대신 UPDATE 쿼리 실행
+@SQLDelete(sql = "UPDATE courses SET deleted_at = NOW() WHERE id = ?")
+/// 조회 요청(SELECT) 시 항상 deletedAt = false 인 것만 가져오도록 필터링
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
 
@@ -26,16 +42,6 @@ public class Section extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
-    /**
-     * DB 레벨에서 Foreign Key에 ON DELETE CASCADE 제약조건을 생성합니다
-     * ex)
-     * 기본 상태:
-     * 🚨 "잠깐! 1번 강의를 부모로 삼고 있는 섹션들이 아직 살아있어! 부모를 먼저 죽일 순 없어! (에러 발생)"
-     *
-     * ON DELETE CASCADE 설정 시:
-     * 🧹 "오케이, 1번 강의 지울게. 어? 밑에 딸린 섹션들이 있네? 내가 DB 엔진 권한으로 알아서 싹 다 지워줄게!"
-     */
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
     @Column(name = "title", nullable = false, length = 200)

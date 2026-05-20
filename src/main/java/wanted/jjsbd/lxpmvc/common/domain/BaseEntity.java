@@ -30,7 +30,7 @@ public abstract class BaseEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted_at",nullable = false)
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     public boolean isDeleted() {
