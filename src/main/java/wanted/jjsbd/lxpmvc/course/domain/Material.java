@@ -24,6 +24,8 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Material extends BaseEntity {
 
+	private static final int MINIMUM_SEQUENCE = 1;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -54,8 +56,6 @@ public class Material extends BaseEntity {
 		this.contentUrl = contentUrl;
 		this.sequence = sequence;
 	}
-
-	private static final int MINIMUM_SEQUENCE = 1;
 
 	public static Material createMaterial(Section section, String title, MaterialType materialType, String contentUrl,
 		Integer sequence) {
