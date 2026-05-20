@@ -1,9 +1,5 @@
 package wanted.jjsbd.lxpmvc.enrollment.domain;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 class EnrollmentTest {
 /*
 	@Test
