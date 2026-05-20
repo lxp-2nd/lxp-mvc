@@ -12,11 +12,15 @@
 	<section class="course-grid" aria-label="강의 목록">
 		<article class="course-card" th:each="course : ${courses}">
 			<div class="thumb">강의 썸네일</div>
-			<h2 th:text="${course.title}">서비스 기획 MVP</h2>
+			<h2>
+				<a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}">서비스 기획 MVP</a>
+			</h2>
 			<p th:text="${course.instructor}">강사명</p>
-			<div class="card-actions">
+			<div class="course-card-footer">
+				<p th:text="|${course.learnerCount}명 수강중|">n명 수강중</p>
 				<a class="btn ghost" th:href="@{/courses/{id}(id=${course.id})}">상세 보기</a>
 			</div>
+
 		</article>
 	</section>
 </main>

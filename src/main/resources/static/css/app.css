@@ -231,6 +231,18 @@ p {
 	padding: 18px;
 }
 
+.course-card-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 14px;
+}
+
+.course-card-footer p {
+	margin-bottom: 0;
+}
+
 .thumb,
 .large-thumb,
 .small-thumb,
@@ -245,7 +257,7 @@ p {
 .thumb {
 	display: grid;
 	place-items: center;
-	height: 88px;
+	height: 100px;
 	margin-bottom: 18px;
 }
 
