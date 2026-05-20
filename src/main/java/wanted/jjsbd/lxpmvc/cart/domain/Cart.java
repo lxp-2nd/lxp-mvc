@@ -33,6 +33,5 @@ public class Cart {
 	private Member member;
 
 	@OneToMany(mappedBy = "cart")
-	@OrderBy("createdAt DESC")
 	private List<CartItem> cartItems = new ArrayList<>();
 }
