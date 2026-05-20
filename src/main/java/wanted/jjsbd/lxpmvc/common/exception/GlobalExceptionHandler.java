@@ -26,9 +26,17 @@ public class GlobalExceptionHandler {
 			String errorTarget = (fieldError != null && fieldError.getDefaultMessage() != null)
 				? fieldError.getDefaultMessage()
 				: "INVALID_INPUT";
-			ErrorCode errorCode = ErrorCode.valueOf(errorTarget);
+			String errorMessage;
+			try {
+				ErrorCode errorCode = ErrorCode.valueOf(errorTarget);
+				errorMessage = errorCode.getMessage();
+				log.debug(errorCode.toString());
+			} catch (IllegalArgumentException ex) {
+				errorMessage = errorTarget;
+				log.debug(errorTarget);
+			}
 			redirectAttributes.addAttribute("error", true);
-			redirectAttributes.addAttribute("message", errorCode.getMessage());
+			redirectAttributes.addAttribute("message", errorMessage);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			redirectAttributes.addAttribute("error", true);
