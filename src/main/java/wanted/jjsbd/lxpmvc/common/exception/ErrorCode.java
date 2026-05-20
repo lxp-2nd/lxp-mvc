@@ -43,12 +43,11 @@ public enum ErrorCode {
 	ENROLLMENT_ALREADY_CANCELLED(HttpStatus.CONFLICT, "ENROLL_006", "이미 취소된 신청입니다."),
 	ENROLLMENT_EMPTY(HttpStatus.NOT_FOUND, "ENROLL_007", "신청 완료한 강의가 없습니다."),
 	ENROLLMENT_LIST_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ENROLL_008", "본인의 수강 목록만 조회할 수 있습니다."),
-	ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ENROLL_009", "신청 정보를 찾을 수 없습니다.")
+	ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ENROLL_009", "신청 정보를 찾을 수 없습니다.");
 
 	// Cart
-	;
-
 	private final HttpStatus httpStatus;
 	private final String code;
 	private final String message;
 }
+

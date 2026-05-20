@@ -20,14 +20,8 @@ import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity(name = "enrollment")
-@Table(
-	name = "enrollments",
-	uniqueConstraints = {
-		@UniqueConstraint(
-			name = "uk_member_course",
-			columnNames = {"member_id", "course_id"}
-		)
-	})
+@Table(name = "enrollments", uniqueConstraints = {
+	@UniqueConstraint(name = "uk_member_course", columnNames = {"member_id", "course_id"})})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)    // protected 기본 생성자
 public class Enrollment extends BaseEntity {
@@ -66,3 +60,4 @@ public class Enrollment extends BaseEntity {
 		return enrollment;
 	}
 }
+
