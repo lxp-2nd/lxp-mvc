@@ -3,7 +3,7 @@ name: "✨ Feature"
 about: 새로운 기능을 추가 또는 기존 기능 개선 작업을 위한 이슈입니다.
 title: ''
 labels: enhancement
-assignees: wlsh44
+assignees: 
 
 ---
 

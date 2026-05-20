@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${title})}"></head>
+<body>
+<div th:replace="~{fragments/header :: appHeader(${title})}"></div>
+<main class="container">
+	<section class="section-heading">
+		<h1>내 정보</h1>
+	</section>
+
+	<section class="profile-card">
+		<form th:action="@{/profile}" method="post" class="form-stack">
+			<label>이름<input name="name" th:value="${member.name}"></label>
+			<label>이메일<input name="email" th:value="${member.email}" readonly></label>
+			<p class="helper">이메일은 MVP에서 수정할 수 없습니다.</p>
+			<div class="button-row">
+				<button class="btn primary" type="submit">수정 저장</button>
+				<a class="btn ghost" th:href="@{/login}">로그아웃</a>
+			</div>
+		</form>
+	</section>
+</main>
+</body>
+</html>
