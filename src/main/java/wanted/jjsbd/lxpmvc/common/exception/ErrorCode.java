@@ -14,9 +14,6 @@ public enum ErrorCode {
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_001", "서버 내부 오류가 발생했습니다."),
 
 	// Member
-	MEMBER_REQUIRED_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER_001", "이메일을 입력해주세요."),
-	MEMBER_REQUIRED_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호를 입력해주세요."),
-	MEMBER_REQUIRED_NAME(HttpStatus.BAD_REQUEST, "MEMBER_003", "이름을 입력해주세요."),
 	MEMBER_INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_004", "올바르지 않은 이메일 형식입니다."),
 	MEMBER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_005", "이미 사용 중인 이메일입니다."),
 	MEMBER_INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER_006", "비밀번호는 4자 이상 20자 이하여야 합니다."),
