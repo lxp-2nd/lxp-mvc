@@ -1,10 +1,14 @@
 package wanted.jjsbd.lxpmvc.cart.dto;
 
+import java.time.LocalDateTime;
+
 public record CartItemResponse(
-	String cartItemId,
-	String courseId,
+	Long cartItemId,
+	Long courseId,
 	String courseTitle,
 	String instructor,
-	boolean selected
+	String courseDescription,
+	String thumbnailUrl,
+	LocalDateTime createdAt
 ) {
 }

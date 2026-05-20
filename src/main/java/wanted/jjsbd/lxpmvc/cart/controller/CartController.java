@@ -3,37 +3,40 @@ package wanted.jjsbd.lxpmvc.cart.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import wanted.jjsbd.lxpmvc.cart.dto.CartAddRequest;
 import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
-import wanted.jjsbd.lxpmvc.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.cart.service.CartService;
+import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Controller
 public class CartController {
 
-	private final MockLxpData mockData;
+	private static final String CART_TITLE = "장바구니";
+	private static final String LOGIN_REDIRECT = "redirect:/login";
+	private static final String CART_VIEW = "cart/index";
 
-	public CartController(MockLxpData mockData) {
-		this.mockData = mockData;
+	private final CartService cartService;
+
+	public CartController(CartService cartService) {
+		this.cartService = cartService;
 	}
 
+	// 로그인한 회원의 장바구니 화면을 조회한다.
 	@GetMapping("/cart")
-	public String cart(Model model) {
-		CartResponse cart = mockData.cart();
+	public String cart(@SessionAttribute(name = "loginMember", required = false) Member loginMember, Model model) {
+		if (loginMember == null) {
+			return LOGIN_REDIRECT;
+		}
 
-		model.addAttribute("title", "장바구니");
+		CartResponse cart = cartService.getCart(loginMember);
+
+		model.addAttribute("title", CART_TITLE);
 		model.addAttribute("cart", cart);
 		model.addAttribute("cartItems", cart.cartItems());
-		model.addAttribute("cartCount", cart.cartCount());
-		model.addAttribute("selectedCount", cart.selectedCount());
-		return "cart/index";
-	}
 
-	@PostMapping("/courses/{courseId}/cart")
-	public String addCart(@PathVariable String courseId) {
-		CartAddRequest request = new CartAddRequest(courseId);
-		return "redirect:/cart?courseId=" + request.courseId();
+		// cart/index 으로 하드코딩할건지 팀원이랑 협의 필요.
+		return CART_VIEW;
 	}
 }
+
