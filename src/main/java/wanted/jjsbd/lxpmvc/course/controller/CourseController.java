@@ -31,7 +31,7 @@ public class CourseController {
 		String query = request.q();
 		List<CourseResponse> filteredCourses = mockData.courses().stream()
 			.filter(course -> query.isBlank()
-					|| course.title().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))
+				|| course.title().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))
 			.toList();
 
 		model.addAttribute("title", "강의 목록");
