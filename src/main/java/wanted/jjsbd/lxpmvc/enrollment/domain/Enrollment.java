@@ -1,7 +1,5 @@
 package wanted.jjsbd.lxpmvc.enrollment.domain;
 
-import org.hibernate.annotations.Where;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,8 +13,9 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
@@ -31,8 +30,6 @@ import wanted.jjsbd.lxpmvc.member.domain.Member;
 	})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)    // protected 기본 생성자
-@ToString
-@Where(clause = "deleted_at IS NULL")    // 삭제일시가 null인것만(삭제된 것 제외)
 public class Enrollment extends BaseEntity {
 
 	@Id
@@ -55,6 +52,16 @@ public class Enrollment extends BaseEntity {
 
 	// 수강 도메인 생성(정적 팩토리 메서드)
 	public static Enrollment createEnrollment(Member member, Course course) {
+		if (member == null) {
+			// 추후 에러코드 변경 시 수정 예정
+			throw new CustomException(ErrorCode.INVALID_INPUT);
+		}
+
+		if (course == null) {
+			// 추후 에러코드 변경 시 수정 예정
+			throw new CustomException(ErrorCode.INVALID_INPUT);
+		}
+
 		Enrollment enrollment = new Enrollment(member, course);
 		return enrollment;
 	}
@@ -65,7 +72,7 @@ public class Enrollment extends BaseEntity {
 		// 수강 삭제시 필요 비즈니스 로직 있을 때 활용
 	}
 
-/*
+	/*
 	// JUnit Test 코드
 	public int add(int num1, int num2) {
 		return num1 + num2;
