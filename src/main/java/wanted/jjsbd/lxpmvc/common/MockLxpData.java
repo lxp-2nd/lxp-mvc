@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import wanted.jjsbd.lxpmvc.cart.dto.CartItemResponse;
-import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.course.domain.MaterialType;
 import wanted.jjsbd.lxpmvc.course.dto.CourseResponse;
 import wanted.jjsbd.lxpmvc.course.dto.LessonResponse;
@@ -30,39 +28,32 @@ public class MockLxpData {
 	}
 
 	public List<CourseResponse> courses() {
-		return List.of(
-			new CourseResponse(1L, "프론트엔드 입문", "강사명", "HTML, CSS, JavaScript 기초를 다룹니다.",
-				1, curriculum()),
-			new CourseResponse(1L, "백엔드 입문", "강사명", "스프링",
-				2, curriculum()
-			)
-		);
+		return List.of(new CourseResponse(1L, "프론트엔드 입문", "강사명", "HTML, CSS, JavaScript 기초를 다룹니다.", 1, curriculum()),
+			new CourseResponse(1L, "백엔드 입문", "강사명", "스프링", 2, curriculum()));
 
 	}
 
 	public List<CourseResponse> cartCourses() {
 		Set<String> cartCourseIds = Set.of("frontend-basic", "service-planning", "sql-basic");
-		return courses().stream()
-			.filter(course -> cartCourseIds.contains(String.valueOf(course.id())))
-			.toList();
+		return courses().stream().filter(course -> cartCourseIds.contains(String.valueOf(course.id()))).toList();
 	}
 
-	public CartResponse cart() {
-		List<CartItemResponse> cartItems = cartCourses().stream()
-			.map(course -> new CartItemResponse("cart-" + course.id(), String.valueOf(course.id()), course.title(),
-				course.instructor(), true))
-			.toList();
-		int selectedCount = (int)cartItems.stream()
-			.filter(CartItemResponse::selected)
-			.count();
-
-		return new CartResponse(cartItems, cartItems.size(), selectedCount);
-	}
+	// public CartResponse cart() {
+	// 	List<CartItemResponse> cartItems = cartCourses().stream()
+	// 		.map(course -> new CartItemResponse(
+	// 		"cart-" + String.valueOf(course.id()),
+	// 		String.valueOf(course.id()), course.title(),
+	// 			course.instructor(), true))
+	// 		.toList();
+	// 	int selectedCount = (int)cartItems.stream()
+	// 		.filter(CartItemResponse::selected)
+	// 		.count();
+	//
+	// 	return new CartResponse(cartItems, cartItems.size(), selectedCount);
+	// }
 
 	public EnrollmentResponse enrollment() {
-		return new EnrollmentResponse(List.of(
-			enrollmentCourse("service-planning"),
-			enrollmentCourse("frontend-basic"),
+		return new EnrollmentResponse(List.of(enrollmentCourse("service-planning"), enrollmentCourse("frontend-basic"),
 			enrollmentCourse("sql-basic")));
 	}
 
@@ -74,8 +65,10 @@ public class MockLxpData {
 
 	public LearningResponse learning(String courseId, int sectionId, int courseMaterialId) {
 		CourseResponse course = findCourse(courseId);
-		List<LearningSectionResponse> sections = course.curriculum().stream()
-			.map(section -> new LearningSectionResponse(section.title(), section.lessons().stream()
+		List<LearningSectionResponse> sections = course.curriculum()
+			.stream()
+			.map(section -> new LearningSectionResponse(section.title(), section.lessons()
+				.stream()
 				.map(lesson -> new LearningCourseMaterialResponse(lesson.title(), lesson.type()))
 				.toList()))
 			.toList();
@@ -89,13 +82,10 @@ public class MockLxpData {
 	}
 
 	private List<SectionResponse> curriculum() {
-		return List.of(
-			new SectionResponse("섹션 1. 강의 소개",
-				List.of(new LessonResponse("강의자료 제목", MaterialType.VIDEO),
-					new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))),
-			new SectionResponse("섹션 2. 핵심 개념",
-				List.of(new LessonResponse("강의자료 제목", MaterialType.DOCUMENT),
-					new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))));
+		return List.of(new SectionResponse("섹션 1. 강의 소개", List.of(new LessonResponse("강의자료 제목", MaterialType.VIDEO),
+			new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))), new SectionResponse("섹션 2. 핵심 개념",
+			List.of(new LessonResponse("강의자료 제목", MaterialType.DOCUMENT),
+				new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))));
 	}
 
 	private EnrollmentCourseResponse enrollmentCourse(String courseId) {
@@ -104,8 +94,8 @@ public class MockLxpData {
 			course.instructor(), "신청됨");
 	}
 
-	private LearningCourseMaterialResponse selectedCourseMaterial(List<LearningSectionResponse> sections,
-		int sectionId, int courseMaterialId) {
+	private LearningCourseMaterialResponse selectedCourseMaterial(List<LearningSectionResponse> sections, int sectionId,
+		int courseMaterialId) {
 		if (sectionId < 0 || sectionId >= sections.size()) {
 			return sections.get(0).courseMaterials().get(0);
 		}
@@ -118,8 +108,3 @@ public class MockLxpData {
 		return courseMaterials.get(courseMaterialId);
 	}
 }
-
-
-
-
-
