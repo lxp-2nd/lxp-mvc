@@ -34,4 +34,13 @@ public class CartItem extends BaseEntity {
 	@JoinColumn(name = "course_id", nullable = false)
 	private Course course;
 
+	private CartItem(Cart cart, Course course) {
+		this.cart = cart;
+		this.course = course;
+	}
+
+	public static CartItem create(Cart cart, Course course) {
+		return new CartItem(cart, course);
+	}
+
 }
