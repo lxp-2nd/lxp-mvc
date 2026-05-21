@@ -39,7 +39,7 @@ public class EnrollmentService {
 	public Long enroll(EnrollmentRequest request) {
 
 		// [비즈니스 로직 1] 중복 수강인지 확인
-		if (enrollmentRepository.existsByMemberIdAndCourseId(request.learnerId(), request.courseId())) {
+		if (enrollmentRepository.existsByLearnerIdAndCourseId(request.learnerId(), request.courseId())) {
 			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
 		}
 
