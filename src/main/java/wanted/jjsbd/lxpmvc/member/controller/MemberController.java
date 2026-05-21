@@ -55,6 +55,7 @@ public class MemberController {
 				new UsernamePasswordAuthenticationToken(memberInfo, null, memberInfo.getAuthorities());
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authenticationToken);
+			servletRequest.changeSessionId();
 			HttpSession session = servletRequest.getSession(true);
 			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 		} catch (CustomException e) {
