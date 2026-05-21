@@ -82,12 +82,14 @@ public class EnrollmentController {
 			return "redirect:/enrollment/complete?courseId=" + request.courseId();
 		} catch (CustomException e) {
 			// 1. 비로그인 회원 접근 -> 로그인 화면
-			if(e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED)
+			if(e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED){
 				return "redirect:/member/login";
+			}
 
 			// 2. courseId에 대한 null 검증 에러 -> 강의상세 화면으로 갈수가 없어(courseId = null) -> 강의목록
-			if(e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING)
+			if(e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING){
 				return "redirect:/course/list";
+			}
 
 			// 3. 나머지 예외 -> 강의 상세 화면(이전 화면)
 			return "redirect:/courses/" + courseId;
