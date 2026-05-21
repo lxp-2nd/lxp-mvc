@@ -44,10 +44,10 @@ public class MemberController {
 	@PostMapping("/login")
 	public String doLogin(@Valid @ModelAttribute("loginRequest") LoginRequest request,
 		BindingResult bindingResult, HttpServletRequest servletRequest) {
-		log.info("[LoginFlow] 로그인 요청 진입 - Email: {}, PasswordLength: {}", request.email(), request.password().length());
 		if (bindingResult.hasErrors()) {
 			return "member/login";
 		}
+		log.info("[LoginFlow] 로그인 요청 진입");
 		try {
 			MemberInfo memberInfo = memberService.login(request.email(), request.password());
 			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", memberInfo.nickname());
