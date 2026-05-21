@@ -7,6 +7,7 @@ public record CourseResponse(
 	String title,
 	String instructor,
 	String description,
-	List<SectionResponse> curriculum
+	List<SectionResponse> curriculum,
+	int learnerCount
 ) {
 }
