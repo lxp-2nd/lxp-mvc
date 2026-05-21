@@ -66,6 +66,9 @@ public class EnrollmentService {
 			return savedEnrollment.getId();
 		} catch (DataIntegrityViolationException e) {
 			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
+		} catch (Exception e) {
+			// JPA에서의 문제 발생 및 기타 에러
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
