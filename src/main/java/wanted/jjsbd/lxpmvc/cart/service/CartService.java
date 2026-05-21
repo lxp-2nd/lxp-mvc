@@ -43,7 +43,7 @@ public class CartService {
 		Cart cart = findOrCreateCart(memberId, member);
 		Course course = findCourse(courseId);
 
-		if (cartItemRepository.existsByCartAndCourse(cart, course)) {
+		if (cartItemRepository.existsByCartAndCourseAndDeletedAtIsNull(cart, course)) {
 			return;
 		}
 
@@ -64,12 +64,34 @@ public class CartService {
 
 	// 담은 일시 최신순으로 조회
 	private CartResponse toCartResponse(Cart cart) {
-		List<CartItemResponse> cartItems = cartItemRepository.findByCartOrderByCreatedAtDesc(cart)
+		List<CartItemResponse> cartItems = cartItemRepository.findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(cart)
 			.stream()
 			.map(CartItemResponse::from)
 			.toList();
 
 		return CartResponse.from(cartItems);
+	}
+
+	@Transactional
+	public void deleteCartItems(Long memberId, List<Long> cartItemIds) {
+		if (cartItemIds == null || cartItemIds.isEmpty()) {
+			throw new CustomException(ErrorCode.CART_ITEM_SELECTION_REQUIRED);
+		}
+
+		List<CartItem> cartItems = cartItemRepository.findAllByCartItemIdInAndDeletedAtIsNull(cartItemIds);
+
+		if (cartItems.size() != cartItemIds.size()) {
+			throw new CustomException(ErrorCode.CART_ITEM_NOT_FOUND);
+		}
+
+		boolean hasOtherMemberCartItem = cartItems.stream()
+			.anyMatch(cartItem -> !cartItem.getCart().getMember().getId().equals(memberId));
+
+		if (hasOtherMemberCartItem) {
+			throw new CustomException(ErrorCode.CART_ITEM_ACCESS_DENIED);
+		}
+
+		cartItems.forEach(CartItem::delete);
 	}
 }
 

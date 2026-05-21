@@ -10,10 +10,14 @@ import wanted.jjsbd.lxpmvc.course.domain.Course;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-	List<CartItem> findByCartOrderByCreatedAtDesc(Cart cart);
+	List<CartItem> findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(Cart cart);
 
-	boolean existsByCartAndCourse(Cart cart, Course course);
+	boolean existsByCartAndCourseAndDeletedAtIsNull(Cart cart, Course course);
+
+	List<CartItem> findAllByCartItemIdInAndDeletedAtIsNull(List<Long> cartItemIds);
 }
+
+
 
 
 

@@ -15,11 +15,16 @@
         <a class="btn primary" th:href="@{/courses}">강의 보러가기</a>
     </section>
 
-    <section class="cart-layout" th:if="${!#lists.isEmpty(cartItems)}">
+    <form class="cart-layout"
+          th:if="${!#lists.isEmpty(cartItems)}"
+          th:action="@{/cart/items/delete}"
+          method="post">
         <div class="cart-list">
             <article class="cart-item" th:each="cartItem : ${cartItems}">
                 <input type="checkbox"
                        class="cart-item-checkbox"
+                       name="cartItemIds"
+                       th:value="${cartItem.cartItemId}"
                        aria-label="강의 선택">
 
                 <div class="small-thumb">
@@ -36,16 +41,17 @@
                     </p>
                 </div>
 
-                <button class="btn ghost" type="button">삭제</button>
+                <button class="btn ghost" type="submit">삭제</button>
             </article>
         </div>
 
         <aside class="summary-card">
             <h2>선택 강의</h2>
             <p><strong id="selected-count">0</strong>개 강의 선택됨</p>
+            <button class="btn ghost full" type="submit">선택 강의 삭제</button>
             <button class="btn primary full" type="button">선택 강의 신청</button>
         </aside>
-    </section>
+    </form>
 </main>
 
 <script>
@@ -74,3 +80,4 @@
 </script>
 </body>
 </html>
+
