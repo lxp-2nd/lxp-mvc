@@ -13,6 +13,8 @@ import wanted.jjsbd.lxpmvc.cart.dto.CartItemResponse;
 import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.cart.repository.CartItemRepository;
 import wanted.jjsbd.lxpmvc.cart.repository.CartRepository;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.course.repository.CourseRepository;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
@@ -38,19 +40,26 @@ public class CartService {
 	@Transactional
 	public void addCartItem(Long memberId, Long courseId) {
 		Member member = entityManager.getReference(Member.class, memberId);
-
-		Cart cart = cartRepository.findByMember_Id(memberId)
-			.orElseGet(() -> cartRepository.save(Cart.create(member)));
-
-		Course course = courseRepository.findById(courseId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다. courseId=" + courseId));
+		Cart cart = findOrCreateCart(memberId, member);
+		Course course = findCourse(courseId);
 
 		if (cartItemRepository.existsByCartAndCourse(cart, course)) {
 			return;
 		}
 
-		CartItem cartItem = CartItem.create(cart, course);
-		cartItemRepository.save(cartItem);
+		cartItemRepository.save(CartItem.create(cart, course));
+	}
+
+	// 로그인한 회원의 장바구니를 찾고, 없으면 새로 만든다
+	private Cart findOrCreateCart(Long memberId, Member member) {
+		return cartRepository.findByMember_Id(memberId)
+			.orElseGet(() -> cartRepository.save(Cart.create(member)));
+	}
+
+	// 장바구니에는 존재하는 강의만 담음
+	private Course findCourse(Long courseId) {
+		return courseRepository.findById(courseId)
+			.orElseThrow(() -> new CustomException(ErrorCode.COURSE_NOT_FOUND));
 	}
 
 	// 담은 일시 최신순으로 조회
@@ -63,6 +72,8 @@ public class CartService {
 		return CartResponse.from(cartItems);
 	}
 }
+
+
 
 
 
