@@ -14,4 +14,7 @@ public record LoginRequest(
 	public static LoginRequest empty() {
 		return new LoginRequest("", "");
 	}
+	public String getNormalizedEmail() {
+		return email == null ? null : email.trim().toLowerCase();
+	}
 }

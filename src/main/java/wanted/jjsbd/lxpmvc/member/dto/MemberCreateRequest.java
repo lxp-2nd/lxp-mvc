@@ -18,4 +18,7 @@ public record MemberCreateRequest(
 	@Size(min = 4, max = 20, message = "비밀번호는 4자 이상 20자 이하여야 합니다.")
 	String password
 ) {
+	public String getNormalizedEmail() {
+		return email == null ? null : email.trim().toLowerCase();
+	}
 }

@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
@@ -63,26 +64,28 @@ public class Member extends BaseEntity {
 	}
 
 	public void updateProfile(String nickname, String profileImg) {
-		if (nickname != null && !nickname.isBlank()) {
-			this.nickname = nickname;
-		}
+		DomainValidator.validateNotBlank(nickname);
+		this.nickname = nickname;
 		this.profileImg = profileImg;
 	}
 
 	private void validateNickname(String nickname) {
-		if (nickname == null || nickname.isBlank() || nickname.length() > 20) {
+		DomainValidator.validateNotBlank(nickname);
+		if (nickname.length() > 20) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_NAME);
 		}
 	}
 
 	private void validateEmail(String email) {
-		if (email == null || email.isBlank() || email.length() > 100 || !EMAIL_PATTERN.matcher(email).matches()) {
+		DomainValidator.validateNotBlank(email);
+		if (email.length() > 100 || !EMAIL_PATTERN.matcher(email).matches()) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_EMAIL_FORMAT);
 		}
 	}
 
 	private void validatePasswordHash(String passwordHash) {
-		if (passwordHash == null || passwordHash.isBlank() || passwordHash.length() > 200) {
+		DomainValidator.validateNotBlank(passwordHash);
+		if (passwordHash.length() > 200) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_PASSWORD);
 		}
 	}
