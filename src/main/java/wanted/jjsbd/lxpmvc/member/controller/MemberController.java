@@ -55,6 +55,7 @@ public class MemberController {
 				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authenticationToken);
+			servletRequest.changeSessionId();
 			HttpSession session = servletRequest.getSession(true);
 			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 		} catch (CustomException e) {
@@ -75,16 +76,26 @@ public class MemberController {
 
 	@PostMapping("/signup")
 	public String doSignup(@Valid @ModelAttribute("signupRequest") SignupRequest request,
-		BindingResult bindingResult) {
+		BindingResult bindingResult, HttpServletRequest servletRequest) {
 		if (bindingResult.hasErrors()) {
 			return "member/signup";
 		}
 		try {
-			memberService.signup(request.toMemberCreateRequest());
+			AuthInfo authInfo = memberService.signup(request.toMemberCreateRequest());
+			log.info("[SignupFlow] 회원가입 성공 및 자동 로그인 처리 시작! 닉네임: {}", authInfo.nickname());
+			UsernamePasswordAuthenticationToken authenticationToken =
+				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+			SecurityContext securityContext = SecurityContextHolder.getContext();
+			securityContext.setAuthentication(authenticationToken);
+			servletRequest.changeSessionId();
+			HttpSession session = servletRequest.getSession(true);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 		} catch (CustomException e) {
+			log.error("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/signup";
 		}
+		log.info("[SignupFlow] 자동 로그인 완료. 메인 강의 페이지(/courses)로 이동합니다.");
 		return "redirect:/courses";
 	}
 
