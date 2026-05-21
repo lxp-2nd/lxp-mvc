@@ -1,34 +1,68 @@
 package wanted.jjsbd.lxpmvc.member.controller;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberResponse;
 import wanted.jjsbd.lxpmvc.member.dto.SignupRequest;
+import wanted.jjsbd.lxpmvc.member.service.MemberService;
 
+@Slf4j
 @Controller
 public class MemberController {
-
 	private final MockLxpData mockData;
+	private final MemberService memberService;
 
-	public MemberController(MockLxpData mockData) {
+	public MemberController(MockLxpData mockData, MemberService memberService) {
 		this.mockData = mockData;
+		this.memberService = memberService;
 	}
 
 	@GetMapping("/login")
 	public String login(Model model) {
 		model.addAttribute("title", "로그인");
-		model.addAttribute("loginRequest", new LoginRequest("", ""));
+		model.addAttribute("loginRequest", LoginRequest.empty());
 		return "member/login";
 	}
 
 	@PostMapping("/login")
-	public String doLogin(LoginRequest request) {
+	public String doLogin(@Valid @ModelAttribute("loginRequest") LoginRequest request,
+		BindingResult bindingResult, HttpServletRequest servletRequest) {
+		if (bindingResult.hasErrors()) {
+			return "member/login";
+		}
+		log.info("[LoginFlow] 로그인 요청 진입");
+		try {
+			AuthInfo authInfo = memberService.login(request);
+			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", authInfo.nickname());
+			UsernamePasswordAuthenticationToken authenticationToken =
+				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+			SecurityContext securityContext = SecurityContextHolder.getContext();
+			securityContext.setAuthentication(authenticationToken);
+			HttpSession session = servletRequest.getSession(true);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+		} catch (CustomException e) {
+			log.error("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
+			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
+			return "member/login";
+		}
+		log.info("[LoginFlow] 메인 강의 페이지(/courses)로 리다이렉트합니다.");
 		return "redirect:/courses";
 	}
 
