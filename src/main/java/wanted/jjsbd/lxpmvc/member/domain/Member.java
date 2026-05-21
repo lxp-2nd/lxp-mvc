@@ -1,5 +1,7 @@
 package wanted.jjsbd.lxpmvc.member.domain;
 
+import java.util.regex.Pattern;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,12 +14,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
 @Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
+
+	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +47,10 @@ public class Member extends BaseEntity {
 	private MemberRole role;
 
 	private Member(String nickname, String email, String passwordHash, MemberRole role, String profileImg) {
+		validateNickname(nickname);
+		validateEmail(email);
+		validatePasswordHash(passwordHash);
+		validateRole(role);
 		this.nickname = nickname;
 		this.email = email;
 		this.passwordHash = passwordHash;
@@ -57,5 +67,29 @@ public class Member extends BaseEntity {
 			this.nickname = nickname;
 		}
 		this.profileImg = profileImg;
+	}
+
+	private void validateNickname(String nickname) {
+		if (nickname == null || nickname.isBlank() || nickname.length() > 20) {
+			throw new CustomException(ErrorCode.MEMBER_INVALID_NAME);
+		}
+	}
+
+	private void validateEmail(String email) {
+		if (email == null || email.isBlank() || email.length() > 100 || !EMAIL_PATTERN.matcher(email).matches()) {
+			throw new CustomException(ErrorCode.MEMBER_INVALID_EMAIL_FORMAT);
+		}
+	}
+
+	private void validatePasswordHash(String passwordHash) {
+		if (passwordHash == null || passwordHash.isBlank() || passwordHash.length() > 200) {
+			throw new CustomException(ErrorCode.MEMBER_INVALID_PASSWORD);
+		}
+	}
+
+	private void validateRole(MemberRole role) {
+		if (role == null) {
+			throw new CustomException(ErrorCode.REQUIRED_VALUE_MISSING);
+		}
 	}
 }
