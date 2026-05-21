@@ -1,7 +1,5 @@
 package wanted.jjsbd.lxpmvc.course.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,10 +30,6 @@ public class CourseService {
 		Page<Course> coursePage = courseRepository.findByTitleContainingAndDeletedAtIsNull(keyword, pageable);
 
 		/// 3. Entity -> DTO 변환 후 반환
-		return coursePage.map(course -> {
-			// TODO: Curriculum 기능 구현 시 List.of()를 실제 컬리큘럼 리스트로 교체할 것.
-			return new CourseResponse(course.getId(), course.getTitle(), course.getInstructor().getNickname(),
-				course.getDescription(), null, List.of());
-		});
+		return coursePage.map(CourseResponse::of);
 	}
 }
