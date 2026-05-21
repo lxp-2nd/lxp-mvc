@@ -69,13 +69,22 @@ public class MemberController {
 	@GetMapping("/signup")
 	public String signup(Model model) {
 		model.addAttribute("title", "회원가입");
-		model.addAttribute("signupRequest",
-			new SignupRequest("", "", "", ""));
+		model.addAttribute("signupRequest", SignupRequest.empty());
 		return "member/signup";
 	}
 
 	@PostMapping("/signup")
-	public String doSignup(SignupRequest request) {
+	public String doSignup(@Valid @ModelAttribute("signupRequest") SignupRequest request,
+		BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "member/signup";
+		}
+		try {
+			memberService.signup(request.toMemberCreateRequest());
+		} catch (CustomException e) {
+			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
+			return "member/signup";
+		}
 		return "redirect:/courses";
 	}
 
