@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record MemberCreateRequest(
 	@NotBlank(message = "닉네임은 필수 입력 항목입니다.")
-	@Size(max = 20, message = "닉네임은 최대 20자까지 가능합니다.")
+	@Size(min = 2, max = 20, message = "이름은 2자 이상 20자 이하여야 합니다.")
 	String nickname,
 
 	@NotBlank(message = "이메일은 필수 입력 항목입니다.")
