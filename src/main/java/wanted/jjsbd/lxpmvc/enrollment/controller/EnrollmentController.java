@@ -1,6 +1,7 @@
 package wanted.jjsbd.lxpmvc.enrollment.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
@@ -21,6 +23,7 @@ import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningResponse;
 import wanted.jjsbd.lxpmvc.enrollment.service.EnrollmentService;
+import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Controller
@@ -61,28 +64,36 @@ public class EnrollmentController {
 	@PostMapping("/courses/{courseId}/enroll")
 	public String enroll(
 		@PathVariable String courseId,
-		@SessionAttribute(name = "loginMember", required = true) Member loginMember
+		@AuthenticationPrincipal AuthInfo authInfo
 	) {
 
 		try {
-			// 1. 로그인 사용자인지 확인후 비로그인인 경우 login 화면으로 redirect
-			DomainValidator.validateNotNull(loginMember);
-			// 1-1. member객체의 ID값이 Long인지 확인 -> 미구현 사항(5/20)
-			// DomainValidator.validateNotNull(loginMember.getId());
+			// 1. 로그인 사용자인지 확인
+			if (authInfo == null) {
+				throw new CustomException(ErrorCode.MEMBER_LOGIN_REQUIRED);
+			}
 
-			// 2. courseId가 null인지에 대해 확인
+			// 2. courseId가 null인지 확인
 			DomainValidator.validateNotBlank(courseId);
-			// 여기 분기의 경우에는 1의 경우 로그인으로, 2의 경우 원래 강의상세 페이지에 두면 될듯합니다.
 
-			EnrollmentRequest request = new EnrollmentRequest(1L, Long.valueOf(courseId));
+			EnrollmentRequest request = new EnrollmentRequest(authInfo.memberId(), Long.valueOf(courseId));
 			enrollmentService.enroll(request);
 
 			return "redirect:/enrollment/complete?courseId=" + request.courseId();
 		} catch (CustomException e) {
-			// 로그인으로 분기에 대한 것을 기준 잡기가 애매함..
-			return "redirect:/member/login";
+			// 1. 비로그인 회원 접근 -> 로그인 화면
+			if(e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED)
+				return "redirect:/member/login";
+
+			// 2. courseId에 대한 null 검증 에러 -> 강의상세 화면으로 갈수가 없어(courseId = null) -> 강의목록
+			if(e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING)
+				return "redirect:/course/list";
+
+			// 3. 나머지 예외 -> 강의 상세 화면(이전 화면)
+			return "redirect:/courses/" + courseId;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			// 4. 나머지는 예외 -> 강의 상세 화면(이전 화면)
+			return "redirect:/courses/" + courseId;
 		}
 	}
 
