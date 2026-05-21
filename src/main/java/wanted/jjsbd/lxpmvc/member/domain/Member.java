@@ -71,7 +71,7 @@ public class Member extends BaseEntity {
 
 	private void validateNickname(String nickname) {
 		DomainValidator.validateNotBlank(nickname);
-		if (nickname.length() > 20) {
+		if (nickname.length() <= 20) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_NAME);
 		}
 	}
