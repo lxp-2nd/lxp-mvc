@@ -1,5 +1,9 @@
 package wanted.jjsbd.lxpmvc.course.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,14 +43,15 @@ public class Course extends BaseEntity {
 	@Column(name = "description", length = 255)
 	private String description;
 
-	/// 1. 실제 데이터를 넣는 생성자는 private으로 숨겨서, 외부에서 new Course()를 마음대로 못하게 막습니다.
+	@OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<Section> sections = new ArrayList<>();
+
 	private Course(Member instructor, String title, String description) {
 		this.instructor = instructor;
 		this.title = title;
 		this.description = description;
 	}
 
-	/// 2. 정적 팩토리 메서드 (Static Factory Method)
 	public static Course createCourse(Member instructor, String title, String description) {
 		validateCourseTitle(title);
 		if (instructor == null) {
