@@ -6,15 +6,15 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-public record MemberInfo(
+public record AuthInfo(
 	Long memberId,
 	String email,
 	String nickname,
 	MemberRole role
 ) {
 
-	public static MemberInfo from(Member member) {
-		return new MemberInfo(
+	public static AuthInfo from(Member member) {
+		return new AuthInfo(
 			member.getId(),
 			member.getEmail(),
 			member.getNickname(),

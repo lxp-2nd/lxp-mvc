@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
-import wanted.jjsbd.lxpmvc.member.domain.MemberInfo;
+import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberResponse;
@@ -49,10 +49,10 @@ public class MemberController {
 		}
 		log.info("[LoginFlow] 로그인 요청 진입");
 		try {
-			MemberInfo memberInfo = memberService.login(request.email(), request.password());
-			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", memberInfo.nickname());
+			AuthInfo authInfo = memberService.login(request.email(), request.password());
+			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", authInfo.nickname());
 			UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(memberInfo, null, memberInfo.getAuthorities());
+				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authenticationToken);
 			HttpSession session = servletRequest.getSession(true);
