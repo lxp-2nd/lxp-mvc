@@ -1,5 +1,7 @@
 package wanted.jjsbd.lxpmvc.member.domain;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
 @Table(name = "members")
@@ -44,7 +48,7 @@ public class Member extends BaseEntity {
 		this.nickname = nickname;
 		this.email = email;
 		this.passwordHash = passwordHash;
-		this.role = role == null ? MemberRole.BASIC : role;
+		this.role = role;
 		this.profileImg = profileImg;
 	}
 
