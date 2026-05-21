@@ -28,7 +28,8 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 @Table(name = "sections", uniqueConstraints = {
 	@UniqueConstraint(name = "uk_course_sequence", columnNames = {"course_id", "sequence"})
 	/// sequence만 유니크키를 걸어두면 문제점: ex) sequence 1로 저장을 하면 어느 강의테이블에서도 sequence 1 만들짐 못함
-	/// 그래서 복합 유니크키를 걸어둔 거임.})
+	/// 그래서 복합 유니크키를 걸어둔 거임.
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
 
