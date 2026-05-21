@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import wanted.jjsbd.lxpmvc.cart.dto.CartItemResponse;
-import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.course.dto.CourseResponse;
 import wanted.jjsbd.lxpmvc.course.dto.LessonResponse;
 import wanted.jjsbd.lxpmvc.course.dto.SectionResponse;
@@ -49,18 +47,6 @@ public class MockLxpData {
 		return courses().stream()
 			.filter(course -> cartCourseIds.contains(course.id()))
 			.toList();
-	}
-
-	public CartResponse cart() {
-		List<CartItemResponse> cartItems = cartCourses().stream()
-			.map(course -> new CartItemResponse("cart-" + course.id(), course.id(), course.title(),
-				course.instructor(), true))
-			.toList();
-		int selectedCount = (int)cartItems.stream()
-			.filter(CartItemResponse::selected)
-			.count();
-
-		return new CartResponse(cartItems, cartItems.size(), selectedCount);
 	}
 
 	public EnrollmentResponse enrollment() {
@@ -119,3 +105,8 @@ public class MockLxpData {
 		return courseMaterials.get(courseMaterialId);
 	}
 }
+
+
+
+
+
