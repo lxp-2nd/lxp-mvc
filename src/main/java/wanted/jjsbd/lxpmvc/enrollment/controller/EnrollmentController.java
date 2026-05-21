@@ -64,10 +64,12 @@ public class EnrollmentController {
 	@PostMapping("/cart/enroll")
 	public String enrollCart(CartEnrollmentRequest request, Model model) {
 		if (request.courseIds().isEmpty()) {
-			addCartModel(model);
+			// addCartModel(model);
 			model.addAttribute("validationError", "신청할 강의를 1개 이상 선택해주세요.");
 			return "cart/index";
 		}
+
+		// List 형식으로 수강쪽으로 넘기고, 서비스단에서 내가 호출하는걸로 정리.
 
 		String courseId = request.courseIds().get(0);
 		return "redirect:/enroll/complete?courseId=" + courseId;
@@ -114,13 +116,13 @@ public class EnrollmentController {
 		return "enrollment/detail";
 	}
 
-	private void addCartModel(Model model) {
+	/*private void addCartModel(Model model) {
 		CartResponse cart = mockData.cart();
 
 		model.addAttribute("title", "장바구니");
 		model.addAttribute("cart", cart);
 		model.addAttribute("cartItems", cart.cartItems());
-		model.addAttribute("cartCount", cart.cartCount());
-		model.addAttribute("selectedCount", cart.selectedCount());
-	}
+		// model.addAttribute("cartCount", cart.cartCount());
+		// model.addAttribute("selectedCount", cart.selectedCount());
+	}*/
 }
