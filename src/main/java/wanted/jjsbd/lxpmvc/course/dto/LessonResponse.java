@@ -1,4 +1,9 @@
 package wanted.jjsbd.lxpmvc.course.dto;
 
-public record LessonResponse(String title, String type) {
+import wanted.jjsbd.lxpmvc.course.domain.MaterialType;
+
+public record LessonResponse(
+	String title,
+	MaterialType type
+) {
 }
