@@ -21,6 +21,20 @@ public enum ErrorCode {
 	// 3. Common - Resource
 	EMPTY_LIST(HttpStatus.BAD_REQUEST, "COMMON_005", "목록이 비어 있습니다"),
 
+	// Member
+	MEMBER_INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_004", "올바르지 않은 이메일 형식입니다."),
+	MEMBER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_005", "이미 사용 중인 이메일입니다."),
+	MEMBER_INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER_006", "비밀번호는 4자 이상 20자 이하여야 합니다."),
+	MEMBER_PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER_007", "비밀번호 확인이 일치하지 않습니다."),
+	MEMBER_INVALID_NAME(HttpStatus.BAD_REQUEST, "MEMBER_008", "이름은 2자 이상 20자 이하여야 합니다."),
+	MEMBER_INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "MEMBER_009", "이메일 또는 비밀번호가 올바르지 않습니다."),
+	MEMBER_LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "MEMBER_010", "로그인이 필요한 기능입니다."),
+	MEMBER_PROFILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "MEMBER_011", "본인 정보만 조회할 수 있습니다."),
+	MEMBER_EMAIL_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "MEMBER_012", "이메일은 수정할 수 없습니다."),
+	MEMBER_PROFILE_IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "MEMBER_013", "프로필 이미지는 5MB 이하로 업로드해주세요."),
+	MEMBER_ALREADY_WITHDRAWN(HttpStatus.CONFLICT, "MEMBER_014", "이미 탈퇴 처리된 계정입니다."),
+	MEMBER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_015", "회원 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
+
 	// Course
 	COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
 	COURSE_INSTRUCTOR_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_002", "강사 정보는 필수입니다."),
