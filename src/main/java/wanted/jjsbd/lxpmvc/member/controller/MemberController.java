@@ -49,7 +49,7 @@ public class MemberController {
 		}
 		log.info("[LoginFlow] 로그인 요청 진입");
 		try {
-			AuthInfo authInfo = memberService.login(request.email(), request.password());
+			AuthInfo authInfo = memberService.login(request);
 			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", authInfo.nickname());
 			UsernamePasswordAuthenticationToken authenticationToken =
 				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
