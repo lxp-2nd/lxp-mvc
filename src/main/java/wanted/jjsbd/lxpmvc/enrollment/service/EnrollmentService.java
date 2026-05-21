@@ -4,11 +4,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
-import wanted.jjsbd.lxpmvc.course.dto.CourseResponse;
 import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.repository.EnrollmentRepository;
@@ -40,26 +38,25 @@ public class EnrollmentService {
 	@Transactional
 	public Long enroll(EnrollmentRequest request) {
 
-		// [비즈니스 로직] 중복 수강인지 확인
+		// [비즈니스 로직 1] 중복 수강인지 확인
 		if (enrollmentRepository.existsByMemberIdAndCourseId(request.learnerId(), request.courseId())) {
 			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
 		}
 
-		// mockdata
-		MockLxpData mockData = new MockLxpData();
-
 		// 회원 조회
 		// memberRepository 구현 후 추후 추가 수정
-		// Member learner = memberRepository.findById(learnerId);
+		// ErrorCode 상황: 회원이 회원ID로 조회되지 않는 경우
+		// Member learner = memberRepository.findById(request.learnerId())
+		// 	.orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
 		Member learner = new Member();
 
 		// 강의 조회
 		// courseRepository 구현 후 추후 추가 수정
-		// Course course = courseRepository.findById(courseId);
-		CourseResponse cr = mockData.findCourse("0");
-		Course course = Course.createCourse(learner, cr.title(), cr.description());
+		// ErrorCode 상황: 강의가 강의ID로 조회되지 않는 경우
+		// Course course = courseRepository.findById(request.courseId())
+		// 	.orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
+		Course course = Course.createCourse(learner, "title1", "설명설명");
 
-		// Enrollment 생성
 		Enrollment enrollment = Enrollment.createEnrollment(learner, course);
 
 		try {

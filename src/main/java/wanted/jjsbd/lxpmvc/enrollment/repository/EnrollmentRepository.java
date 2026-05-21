@@ -7,5 +7,5 @@ import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 	// svae, findById(ID), findAll(), deleteById(ID) 자동 생성
 
-	boolean existsByMemberIdAndCourseId(Long memberId, Long courseId);
+	boolean existsByMemberIdAndCourseId(Long learnerId, Long courseId);
 }
