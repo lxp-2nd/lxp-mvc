@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: lxp-mvc
+  profiles:
+    active: local
