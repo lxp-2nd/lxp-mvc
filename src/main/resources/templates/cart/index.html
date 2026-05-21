@@ -15,16 +15,16 @@
         <a class="btn primary" th:href="@{/courses}">강의 보러가기</a>
     </section>
 
-    <form class="cart-layout"
+    <form id="cart-form"
+          class="cart-layout"
           th:if="${!#lists.isEmpty(cartItems)}"
-          th:action="@{/cart/items/delete}"
           method="post">
         <div class="cart-list">
             <article class="cart-item" th:each="cartItem : ${cartItems}">
                 <input type="checkbox"
                        class="cart-item-checkbox"
-                       name="cartItemIds"
                        th:value="${cartItem.cartItemId}"
+                       th:data-course-id="${cartItem.courseId}"
                        aria-label="강의 선택">
 
                 <div class="small-thumb">
@@ -41,25 +41,39 @@
                     </p>
                 </div>
 
-                <button class="btn ghost" type="submit">삭제</button>
+                <button class="btn ghost"
+                        type="submit"
+                        data-submit-type="delete-one"
+                        th:data-cart-item-id="${cartItem.cartItemId}">
+                    삭제
+                </button>
             </article>
         </div>
 
         <aside class="summary-card">
             <h2>선택 강의</h2>
             <p><strong id="selected-count">0</strong>개 강의 선택됨</p>
-            <button class="btn ghost full" type="submit">선택 강의 삭제</button>
-            <button class="btn primary full" type="button">선택 강의 신청</button>
+            <button class="btn ghost full"
+                    type="submit"
+                    data-submit-type="delete-selected">
+                선택 강의 삭제
+            </button>
+            <button class="btn primary full"
+                    type="submit"
+                    data-submit-type="enroll">
+                선택 강의 신청
+            </button>
         </aside>
     </form>
 </main>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("cart-form");
         const checkboxes = document.querySelectorAll(".cart-item-checkbox");
         const selectedCount = document.getElementById("selected-count");
 
-        if (!selectedCount) {
+        if (!form || !selectedCount) {
             return;
         }
 
@@ -71,6 +85,52 @@
             selectedCount.textContent = count;
         };
 
+        const removePreviousHiddenInputs = () => {
+            form.querySelectorAll(".dynamic-selected-id")
+                .forEach((input) => input.remove());
+        };
+
+        const appendHiddenInput = (name, value) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            input.className = "dynamic-selected-id";
+            form.appendChild(input);
+        };
+
+        form.addEventListener("submit", (event) => {
+            removePreviousHiddenInputs();
+
+            const submitType = event.submitter.dataset.submitType;
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter((checkbox) => checkbox.checked);
+
+            if (submitType === "delete-one") {
+                form.action = "/cart/items/delete";
+                appendHiddenInput("cartItemIds", event.submitter.dataset.cartItemId);
+                return;
+            }
+
+            if (submitType === "delete-selected") {
+                form.action = "/cart/items/delete";
+
+                selectedCheckboxes.forEach((checkbox) => {
+                    appendHiddenInput("cartItemIds", checkbox.value);
+                });
+
+                return;
+            }
+
+            if (submitType === "enroll") {
+                form.action = "/cart/enroll";
+
+                selectedCheckboxes.forEach((checkbox) => {
+                    appendHiddenInput("courseIds", checkbox.dataset.courseId);
+                });
+            }
+        });
+
         checkboxes.forEach((checkbox) => {
             checkbox.addEventListener("change", updateSelectedCount);
         });
@@ -80,4 +140,3 @@
 </script>
 </body>
 </html>
-
