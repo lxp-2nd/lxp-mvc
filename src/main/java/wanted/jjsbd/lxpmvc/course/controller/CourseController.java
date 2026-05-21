@@ -2,6 +2,7 @@ package wanted.jjsbd.lxpmvc.course.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +28,7 @@ public class CourseController {
 	@GetMapping("/courses")
 	public String courses(
 		CourseSearchRequest request,
-		@PageableDefault(size = 10) Pageable pageable, /// 스프링이 알아서 페이징 주문서를 만들어줌.
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		Model model
 	) {
 		Page<CourseResponse> coursePage = courseService.getCourses(request, pageable);
