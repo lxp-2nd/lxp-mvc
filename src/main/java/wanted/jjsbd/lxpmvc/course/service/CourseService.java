@@ -36,7 +36,7 @@ public class CourseService {
 			// TODO: Member 클래스 구현 완료시 "임시 강사"를 실제 강사명(course.getInstructor().getName())으로 교체 할 것
 			// TODO: Curriculum 기능 구현 시 List.of()를 실제 컬리큘럼 리스트로 교체할 것.
 			return new CourseResponse(course.getId(), course.getTitle(), "임시 강사", /// Member 클래스가 비어있기 때문에 임시로 만들어놓았음.
-				course.getDescription(), List.of());
+				course.getDescription(), 3, List.of());
 		});
 	}
 }
