@@ -9,35 +9,51 @@
         <form th:action="@{/signup}" th:object="${signupRequest}" method="post" class="form-stack" novalidate>
             <label>이메일
                 <input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
-                       aria-invalid="false" aria-describedby="email-error"
+                       th:aria-invalid="${#fields.hasErrors('email')} ? 'true' : 'false'"
+                       aria-describedby="email-error"
                        data-error-required="이메일을 입력해주세요." data-error-invalid="올바른 이메일 형식으로 입력해주세요.">
                 <span id="email-error" class="field-error" aria-live="polite"
-                      th:text="${#fields.hasErrors('email')} ? ${#fields.errors('email')[0]} : ''"></span>
+                      th:if="${#fields.hasErrors('email') or #fields.hasErrors('emailWithoutWhitespace')}">
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    <span th:if="${#fields.hasErrors('emailWithoutWhitespace')}" th:errors="*{emailWithoutWhitespace}"></span>
+                </span>
             </label>
-            <label>이름
-                <input th:field="*{name}" placeholder="홍길동" autocomplete="name" required
-                       aria-invalid="false" aria-describedby="name-error"
-                       data-error-required="이름을 입력해주세요.">
-                <span id="name-error" class="field-error" aria-live="polite"></span>
+            <label>닉네임
+                <input th:field="*{nickname}" placeholder="닉네임 입력" autocomplete="nickname" required minlength="2"
+                       maxlength="20"
+                       th:aria-invalid="${#fields.hasErrors('nickname')} ? 'true' : 'false'"
+                       aria-describedby="nickname-error"
+                       data-error-required="닉네임을 입력해주세요."
+                       data-error-minlength="닉네임은 2자 이상 입력해주세요."
+                       data-error-maxlength="닉네임은 최대 20자까지 입력할 수 있습니다.">
+                <span id="nickname-error" class="field-error" aria-live="polite"
+                      th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></span>
             </label>
             <label>비밀번호
                 <input type="password" th:field="*{password}" placeholder="최소 4자, 최대 20자 이내 조건 충족"
                        autocomplete="new-password" required minlength="4" maxlength="20"
-                       aria-invalid="false" aria-describedby="password-error"
+                       th:aria-invalid="${#fields.hasErrors('password')} ? 'true' : 'false'"
+                       aria-describedby="password-error"
                        data-error-required="비밀번호를 입력해주세요."
                        data-error-minlength="비밀번호는 최소 4자 이상 입력해주세요."
                        data-error-maxlength="비밀번호는 최대 20자까지 입력할 수 있습니다.">
-                <span id="password-error" class="field-error" aria-live="polite"></span>
+                <span id="password-error" class="field-error" aria-live="polite"
+                      th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
             </label>
             <label>비밀번호 확인
                 <input type="password" th:field="*{passwordConfirm}" placeholder="최소 4자, 최대 20자 이내 조건 충족"
                        autocomplete="new-password" required minlength="4" maxlength="20"
-                       aria-invalid="false" aria-describedby="passwordConfirm-error"
+                       th:aria-invalid="${#fields.hasErrors('passwordConfirm')} ? 'true' : 'false'"
+                       aria-describedby="passwordConfirm-error"
                        data-error-required="비밀번호 확인을 입력해주세요."
                        data-error-minlength="비밀번호 확인은 최소 4자 이상 입력해주세요."
                        data-error-maxlength="비밀번호 확인은 최대 20자까지 입력할 수 있습니다."
                        data-error-match="비밀번호가 일치하지 않습니다.">
-                <span id="passwordConfirm-error" class="field-error" aria-live="polite"></span>
+                <span id="passwordConfirm-error" class="field-error" aria-live="polite"
+                      th:if="${#fields.hasErrors('passwordConfirm') or #fields.hasErrors('passwordConfirmMatching')}">
+                    <span th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></span>
+                    <span th:if="${#fields.hasErrors('passwordConfirmMatching')}" th:errors="*{passwordConfirmMatching}"></span>
+                </span>
             </label>
             <button class="btn primary" type="submit">회원가입</button>
         </form>
