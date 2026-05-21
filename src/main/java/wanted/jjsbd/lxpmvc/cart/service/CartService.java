@@ -22,8 +22,8 @@ public class CartService {
 	private final CartItemRepository cartItemRepository;
 
 	// 로그인한 회원에 한하여 장바구니 조회
-	public CartResponse getCart(Member loginMember) {
-		return cartRepository.findByMember(loginMember)
+	public CartResponse getCart(Long memberId) {
+		return cartRepository.findByMember_Id(memberId)
 			.map(this::toCartResponse)
 			.orElseGet(CartResponse::empty);
 	}
@@ -39,6 +39,8 @@ public class CartService {
 	}
 
 }
+
+
 
 
 
