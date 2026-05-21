@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
-import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
@@ -24,7 +22,6 @@ import wanted.jjsbd.lxpmvc.enrollment.dto.LearningRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningResponse;
 import wanted.jjsbd.lxpmvc.enrollment.service.EnrollmentService;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
-import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Controller
 public class EnrollmentController {
@@ -82,12 +79,12 @@ public class EnrollmentController {
 			return "redirect:/enrollment/complete?courseId=" + request.courseId();
 		} catch (CustomException e) {
 			// 1. 비로그인 회원 접근 -> 로그인 화면
-			if(e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED){
+			if (e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED) {
 				return "redirect:/member/login";
 			}
 
 			// 2. courseId에 대한 null 검증 에러 -> 강의상세 화면으로 갈수가 없어(courseId = null) -> 강의목록
-			if(e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING){
+			if (e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING) {
 				return "redirect:/course/list";
 			}
 
