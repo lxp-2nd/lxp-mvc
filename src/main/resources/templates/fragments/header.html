@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header class="topbar" th:fragment="appHeader(pageTitle)">
     <!--	<div class="page-label" th:text="${pageTitle}">강의 목록</div>-->
@@ -10,19 +10,21 @@
             <button type="submit" aria-label="검색">⌕</button>
         </form>
         <nav class="nav-actions" aria-label="주요 메뉴">
-            <a class="icon-link" th:href="@{/cart}" aria-label="장바구니">
+            <a class="icon-link" th:href="@{/cart}" aria-label="장바구니" sec:authorize="isAuthenticated()">
                 <span>카트</span>
                 <small th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}">3</small>
             </a>
-            <details class="menu">
+            <details class="menu" sec:authorize="isAuthenticated()">
                 <summary class="icon-link menu-toggle" aria-label="메뉴 열기">☰</summary>
                 <div class="menu-panel">
+                    <a th:href="@{/profile}">회원 정보</a>
                     <a th:href="@{/enrollment}">수강 목록</a>
                     <form th:action="@{/logout}" method="post">
                         <button type="submit">로그아웃</button>
                     </form>
                 </div>
             </details>
+            <a class="btn ghost" th:href="@{/login}" sec:authorize="isAnonymous()">로그인</a>
         </nav>
     </div>
 </header>

@@ -2,12 +2,26 @@ package wanted.jjsbd.lxpmvc.course.dto;
 
 import java.util.List;
 
+import wanted.jjsbd.lxpmvc.course.domain.Course;
+
 public record CourseResponse(
-	String id,
+	Long id,
 	String title,
 	String instructor,
 	String description,
-	List<SectionResponse> curriculum,
-	int learnerCount
+	Integer learnerCount,
+	List<SectionResponse> curriculum
+
 ) {
+	public static CourseResponse of(Course course) {
+		// TODO: Curriculum 기능 구현 시 List.of()를 실제 컬리큘럼 리스트로 교체할 것.
+		return new CourseResponse(
+			course.getId(),
+			course.getTitle(),
+			course.getInstructor().getNickname(),
+			course.getDescription(),
+			null,
+			List.of()
+		);
+	}
 }
