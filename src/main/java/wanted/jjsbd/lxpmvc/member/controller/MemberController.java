@@ -36,6 +36,12 @@ public class MemberController {
 		return "member/login";
 	}
 
+	@PostMapping("/logout")
+	public String logout(HttpServletRequest servletRequest) {
+		securitySessionManager.logoutAndInvalidateSession(servletRequest);
+		return "redirect:/login";
+	}
+
 	@PostMapping("/login")
 	public String doLogin(@Valid @ModelAttribute("loginRequest") LoginRequest request,
 		BindingResult bindingResult, HttpServletRequest servletRequest) {
@@ -47,7 +53,7 @@ public class MemberController {
 			AuthInfo authInfo = memberService.login(request);
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.error("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
+			log.warn("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/login";
 		}
@@ -72,7 +78,7 @@ public class MemberController {
 			AuthInfo authInfo = memberService.signup(request.toMemberCreateRequest());
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.error("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
+			log.warn("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/signup";
 		}
