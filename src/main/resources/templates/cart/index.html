@@ -106,6 +106,18 @@
             const selectedCheckboxes = Array.from(checkboxes)
                 .filter((checkbox) => checkbox.checked);
 
+            if (submitType === "delete-selected" && selectedCheckboxes.length === 0) {
+                event.preventDefault();
+                alert("삭제할 강의를 선택해주세요.");
+                return;
+            }
+
+            if (submitType === "enroll" && selectedCheckboxes.length === 0) {
+                event.preventDefault();
+                alert("신청할 강의를 선택해주세요.");
+                return;
+            }
+
             if (submitType === "delete-one") {
                 form.action = "/cart/items/delete";
                 appendHiddenInput("cartItemIds", event.submitter.dataset.cartItemId);
