@@ -13,7 +13,11 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 	List<CartItem> findByCartOrderByCreatedAtDesc(Cart cart);
 
 	boolean existsByCartAndCourse(Cart cart, Course course);
+
 }
+
+
+
 
 
 
