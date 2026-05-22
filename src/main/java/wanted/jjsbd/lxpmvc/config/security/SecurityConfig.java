@@ -33,6 +33,7 @@ public class SecurityConfig {
 				.anyRequest().hasAnyRole("BASIC", "INSTRUCTOR", "ADMIN")
 			)
 			.formLogin(AbstractHttpConfigurer::disable)
+			.logout(AbstractHttpConfigurer::disable)
 			.exceptionHandling(exception -> exception
 				.authenticationEntryPoint(authenticationEntryPoint)
 				.accessDeniedHandler(accessDeniedHandler)
