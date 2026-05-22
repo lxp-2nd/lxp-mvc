@@ -2,6 +2,7 @@ package wanted.jjsbd.lxpmvc.cart.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,6 @@ public class CartService {
 
 	// 로그인한 회원의 장바구니 조회
 	public CartResponse getCart(Long memberId) {
-		// return cartRepository.findByMember_Id(memberId)
 		return cartRepository.findByMemberId(memberId)
 			.map(this::toCartResponse)
 			.orElseGet(CartResponse::empty);
@@ -53,9 +53,17 @@ public class CartService {
 
 	// 로그인한 회원의 장바구니를 찾고, 없으면 새로 만든다
 	private Cart findOrCreateCart(Long memberId, Member member) {
-		// return cartRepository.findByMember_Id(memberId)
 		return cartRepository.findByMemberId(memberId)
-			.orElseGet(() -> cartRepository.save(Cart.create(member)));
+			.orElseGet(() -> createCartSafely(memberId, member));
+	}
+
+	private Cart createCartSafely(Long memberId, Member member) {
+		try {
+			return cartRepository.saveAndFlush(Cart.create(member));
+		} catch (DataIntegrityViolationException e) {
+			return cartRepository.findByMemberId(memberId)
+				.orElseThrow(() -> e);
+		}
 	}
 
 	// 장바구니에는 존재하는 강의만 담음
