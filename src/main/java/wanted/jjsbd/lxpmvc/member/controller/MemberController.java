@@ -1,8 +1,5 @@
 package wanted.jjsbd.lxpmvc.member.controller;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,11 +8,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.config.security.SecuritySessionManager;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberProfileRequest;
@@ -25,14 +23,11 @@ import wanted.jjsbd.lxpmvc.member.service.MemberService;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class MemberController {
 	private final MockLxpData mockData;
 	private final MemberService memberService;
-
-	public MemberController(MockLxpData mockData, MemberService memberService) {
-		this.mockData = mockData;
-		this.memberService = memberService;
-	}
+	private final SecuritySessionManager securitySessionManager;
 
 	@GetMapping("/login")
 	public String login(Model model) {
@@ -50,14 +45,7 @@ public class MemberController {
 		log.info("[LoginFlow] 로그인 요청 진입");
 		try {
 			AuthInfo authInfo = memberService.login(request);
-			log.info("[LoginFlow] 로그인 검증 성공! 회원 닉네임: {}", authInfo.nickname());
-			UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
-			SecurityContext securityContext = SecurityContextHolder.getContext();
-			securityContext.setAuthentication(authenticationToken);
-			servletRequest.changeSessionId();
-			HttpSession session = servletRequest.getSession(true);
-			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
 			log.error("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
@@ -82,14 +70,7 @@ public class MemberController {
 		}
 		try {
 			AuthInfo authInfo = memberService.signup(request.toMemberCreateRequest());
-			log.info("[SignupFlow] 회원가입 성공 및 자동 로그인 처리 시작! 닉네임: {}", authInfo.nickname());
-			UsernamePasswordAuthenticationToken authenticationToken =
-				new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
-			SecurityContext securityContext = SecurityContextHolder.getContext();
-			securityContext.setAuthentication(authenticationToken);
-			servletRequest.changeSessionId();
-			HttpSession session = servletRequest.getSession(true);
-			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
 			log.error("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
