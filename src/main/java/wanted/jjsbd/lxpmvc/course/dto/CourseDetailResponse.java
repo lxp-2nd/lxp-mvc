@@ -9,7 +9,7 @@ public record CourseDetailResponse(
 	Long id,
 	String title,
 	String description,
-	String instructorName,
+	String instructor,
 	List<SectionResponse> curriculum
 ) {
 	public static CourseDetailResponse of(Course course) {
