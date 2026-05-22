@@ -3,6 +3,8 @@ package wanted.jjsbd.lxpmvc.course.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,6 +52,7 @@ public class Section extends BaseEntity {
 	@Column(name = "sequence", nullable = false)
 	private Integer sequence;
 
+	@BatchSize(size = 100)
 	@OneToMany(mappedBy = "section", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Material> materials = new ArrayList<>();
 

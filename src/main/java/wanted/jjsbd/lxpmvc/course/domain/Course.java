@@ -3,6 +3,8 @@ package wanted.jjsbd.lxpmvc.course.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +45,7 @@ public class Course extends BaseEntity {
 	@Column(name = "description", length = 255)
 	private String description;
 
+	@BatchSize(size = 100)
 	@OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Section> sections = new ArrayList<>();
 
