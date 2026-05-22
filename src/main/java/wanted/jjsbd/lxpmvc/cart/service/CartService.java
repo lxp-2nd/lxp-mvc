@@ -43,11 +43,15 @@ public class CartService {
 		Cart cart = findOrCreateCart(memberId, member);
 		Course course = findCourse(courseId);
 
-		if (cartItemRepository.existsByCartAndCourseAndDeletedAtIsNull(cart, course)) {
-			return;
-		}
-
-		cartItemRepository.save(CartItem.create(cart, course));
+		cartItemRepository.findByCartAndCourse(cart, course)
+			.ifPresentOrElse(
+				cartItem -> {
+					if (cartItem.isDeleted()) {
+						cartItem.restore();
+					}
+				},
+				() -> cartItemRepository.save(CartItem.create(cart, course))
+			);
 	}
 
 	// 로그인한 회원의 장바구니를 찾고, 없으면 새로 만든다

@@ -9,7 +9,10 @@ import wanted.jjsbd.lxpmvc.cart.domain.Cart;
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
 	Optional<Cart> findByMember_Id(Long memberId);
+
 }
+
+
 
 
 

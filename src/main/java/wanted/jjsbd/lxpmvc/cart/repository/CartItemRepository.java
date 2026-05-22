@@ -1,6 +1,7 @@
 package wanted.jjsbd.lxpmvc.cart.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,10 +13,14 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
 	List<CartItem> findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(Cart cart);
 
-	boolean existsByCartAndCourseAndDeletedAtIsNull(Cart cart, Course course);
-
 	List<CartItem> findAllByCartItemIdInAndDeletedAtIsNull(List<Long> cartItemIds);
+
+	Optional<CartItem> findByCartAndCourse(Cart cart, Course course);
 }
+
+
+
+
 
 
 
