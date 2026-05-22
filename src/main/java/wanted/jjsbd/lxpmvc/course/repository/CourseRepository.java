@@ -15,7 +15,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
 	Page<Course> findByTitleContainingAndDeletedAtIsNull(String title, Pageable pageable);
 
-	@EntityGraph(attributePaths = {"sections"})
+	@EntityGraph(attributePaths = {"sections", "sections.materials"})
 	@Query("SELECT c FROM Course c WHERE c.id = :id and c.deletedAt is null ")
-	Optional<Course> findByIdWithCurriculum(@Param("id") String id);
+	Optional<Course> findByIdWithCurriculum(@Param("id") Long id);
 }
