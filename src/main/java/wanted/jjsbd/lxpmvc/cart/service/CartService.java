@@ -18,6 +18,7 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.course.repository.CourseRepository;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
+import wanted.jjsbd.lxpmvc.member.repository.MemberRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,7 +28,7 @@ public class CartService {
 	private final CartRepository cartRepository;
 	private final CartItemRepository cartItemRepository;
 	private final CourseRepository courseRepository;
-	private final EntityManager entityManager;
+	private final MemberRepository memberRepository;
 
 	// 로그인한 회원의 장바구니 조회
 	public CartResponse getCart(Long memberId) {
@@ -39,7 +40,7 @@ public class CartService {
 	// 강의 장바구니 담기
 	@Transactional
 	public void addCartItem(Long memberId, Long courseId) {
-		Member member = entityManager.getReference(Member.class, memberId);
+		Member member = findMember(memberId);
 		Cart cart = findOrCreateCart(memberId, member);
 		Course course = findCourse(courseId);
 
@@ -52,6 +53,11 @@ public class CartService {
 				},
 				() -> cartItemRepository.save(CartItem.create(cart, course))
 			);
+	}
+
+	private Member findMember(Long memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	private Cart findOrCreateCart(Long memberId, Member member) {
@@ -106,6 +112,9 @@ public class CartService {
 		cartItems.forEach(CartItem::delete);
 	}
 }
+
+
+
 
 
 
