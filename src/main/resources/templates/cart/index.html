@@ -18,7 +18,8 @@
     <form id="cart-form"
           class="cart-layout"
           th:if="${!#lists.isEmpty(cartItems)}"
-          method="post">
+          method="post"
+          th:attr="data-delete-action=@{/cart/items/delete}, data-enroll-action=@{/cart/enroll}">
         <div class="cart-list">
             <article class="cart-item" th:each="cartItem : ${cartItems}">
                 <input type="checkbox"
@@ -102,7 +103,13 @@
         form.addEventListener("submit", (event) => {
             removePreviousHiddenInputs();
 
-            const submitType = event.submitter.dataset.submitType;
+            const submitType = event.submitter?.dataset?.submitType;
+
+            if (!submitType) {
+                event.preventDefault();
+                return;
+            }
+
             const selectedCheckboxes = Array.from(checkboxes)
                 .filter((checkbox) => checkbox.checked);
 
@@ -119,13 +126,13 @@
             }
 
             if (submitType === "delete-one") {
-                form.action = "/cart/items/delete";
+                form.action = form.dataset.deleteAction;
                 appendHiddenInput("cartItemIds", event.submitter.dataset.cartItemId);
                 return;
             }
 
             if (submitType === "delete-selected") {
-                form.action = "/cart/items/delete";
+                form.action = form.dataset.deleteAction;
 
                 selectedCheckboxes.forEach((checkbox) => {
                     appendHiddenInput("cartItemIds", checkbox.value);
@@ -135,7 +142,7 @@
             }
 
             if (submitType === "enroll") {
-                form.action = "/cart/enroll";
+                form.action = form.dataset.enrollAction;
 
                 selectedCheckboxes.forEach((checkbox) => {
                     appendHiddenInput("courseIds", checkbox.dataset.courseId);
@@ -152,6 +159,9 @@
 </script>
 </body>
 </html>
+
+
+
 
 
 

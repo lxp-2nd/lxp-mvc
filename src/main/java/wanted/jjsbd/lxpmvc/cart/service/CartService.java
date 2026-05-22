@@ -54,19 +54,16 @@ public class CartService {
 			);
 	}
 
-	// 로그인한 회원의 장바구니를 찾고, 없으면 새로 만든다
 	private Cart findOrCreateCart(Long memberId, Member member) {
 		return cartRepository.findByMember_Id(memberId)
 			.orElseGet(() -> cartRepository.save(Cart.create(member)));
 	}
 
-	// 장바구니에는 존재하는 강의만 담음
 	private Course findCourse(Long courseId) {
 		return courseRepository.findById(courseId)
 			.orElseThrow(() -> new CustomException(ErrorCode.COURSE_NOT_FOUND));
 	}
 
-	// 담은 일시 최신순으로 조회
 	private CartResponse toCartResponse(Cart cart) {
 		List<CartItemResponse> cartItems = cartItemRepository.findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(cart)
 			.stream()
@@ -78,26 +75,42 @@ public class CartService {
 
 	@Transactional
 	public void deleteCartItems(Long memberId, List<Long> cartItemIds) {
+
+		// 삭제할 장바구니 항목을 선택하지 않은 경우
 		if (cartItemIds == null || cartItemIds.isEmpty()) {
 			throw new CustomException(ErrorCode.CART_ITEM_SELECTION_REQUIRED);
 		}
 
-		List<CartItem> cartItems = cartItemRepository.findAllByCartItemIdInAndDeletedAtIsNull(cartItemIds);
+		// 같은 cartItemId가 중복으로 넘어올 수 있으므로 중복 제거
+		List<Long> uniqueCartItemIds = cartItemIds.stream()
+			.distinct()
+			.toList();
 
-		if (cartItems.size() != cartItemIds.size()) {
-			throw new CustomException(ErrorCode.CART_ITEM_NOT_FOUND);
+		// 삭제되지 않은 장바구니 항목만 조회
+		List<CartItem> cartItems = cartItemRepository.findAllByCartItemIdInAndDeletedAtIsNull(uniqueCartItemIds);
+
+		// 요청한 장바구니 항목 중 존재하지 않거나 이미 삭제된 항목이 있는 경우
+		if (cartItems.size() != uniqueCartItemIds.size()) {
+			throw new CustomException(ErrorCode.CART_DELETE_ACCESS_DENIED);
 		}
 
+		// 선택한 항목 중 로그인한 회원의 장바구니 항목이 아닌 것이 있는지 확인
 		boolean hasOtherMemberCartItem = cartItems.stream()
 			.anyMatch(cartItem -> !cartItem.getCart().getMember().getId().equals(memberId));
 
+		// 본인의 장바구니 항목이 아닌 경우 삭제 불가
 		if (hasOtherMemberCartItem) {
-			throw new CustomException(ErrorCode.CART_ITEM_ACCESS_DENIED);
+			throw new CustomException(ErrorCode.CART_DELETE_ACCESS_DENIED);
 		}
 
 		cartItems.forEach(CartItem::delete);
 	}
 }
+
+
+
+
+
 
 
 

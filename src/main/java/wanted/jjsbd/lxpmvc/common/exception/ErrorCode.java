@@ -62,7 +62,6 @@ public enum ErrorCode {
 	// Cart
 	CART_ITEM_SELECTION_REQUIRED(HttpStatus.BAD_REQUEST, "CART_001", "삭제할 강의를 선택해주세요."),
 	CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "CART_002", "삭제할 장바구니 항목을 찾을 수 없습니다."),
-	CART_ITEM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "CART_003", "본인의 장바구니 항목만 삭제할 수 있습니다."),
 	CART_ENROLLED_COURSE_NOT_ALLOWED(HttpStatus.CONFLICT, "CART_004", "이미 신청한 강의는 장바구니에 담을 수 없습니다."),
 	CART_ITEM_ALREADY_EXISTS(HttpStatus.CONFLICT, "CART_005", "이미 장바구니에 담긴 강의입니다."),
 	CART_DELETE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "CART_006", "본인의 장바구니 항목만 삭제할 수 있습니다.");
