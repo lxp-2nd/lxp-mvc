@@ -36,6 +36,8 @@ public enum ErrorCode {
 	MEMBER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_015", "회원 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
 
 	// Course
+	COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_003", "해당 강의를 찾을 수 없거나 이미 삭제되었습니다."), // 👉 새로 추가
+
 	COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
 	COURSE_INSTRUCTOR_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_002", "강사 정보는 필수입니다."),
 
