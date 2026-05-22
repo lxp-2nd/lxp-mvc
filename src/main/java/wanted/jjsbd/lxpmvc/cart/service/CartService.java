@@ -31,7 +31,7 @@ public class CartService {
 
 	// 로그인한 회원의 장바구니 조회
 	public CartResponse getCart(Long memberId) {
-		return cartRepository.findByMember_Id(memberId)
+		return cartRepository.findByMemberId(memberId)
 			.map(this::toCartResponse)
 			.orElseGet(CartResponse::empty);
 	}
@@ -55,7 +55,7 @@ public class CartService {
 	}
 
 	private Cart findOrCreateCart(Long memberId, Member member) {
-		return cartRepository.findByMember_Id(memberId)
+		return cartRepository.findByMemberId(memberId)
 			.orElseGet(() -> cartRepository.save(Cart.create(member)));
 	}
 
@@ -106,6 +106,9 @@ public class CartService {
 		cartItems.forEach(CartItem::delete);
 	}
 }
+
+
+
 
 
 
