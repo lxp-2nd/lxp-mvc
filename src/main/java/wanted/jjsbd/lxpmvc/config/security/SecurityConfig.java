@@ -29,7 +29,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 				.requestMatchers(HttpMethod.GET, "/courses", "/courses/{courseId}", "/").permitAll()
-				.requestMatchers("/login", "/signup").permitAll()
+				.requestMatchers("/login", "/signup", "/logout").permitAll()
 				.anyRequest().hasAnyRole("BASIC", "INSTRUCTOR", "ADMIN")
 			)
 			.formLogin(AbstractHttpConfigurer::disable)
