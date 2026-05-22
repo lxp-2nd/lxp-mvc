@@ -18,7 +18,9 @@
                 <summary class="icon-link menu-toggle" aria-label="메뉴 열기">☰</summary>
                 <div class="menu-panel">
                     <a th:href="@{/enrollment}">수강 목록</a>
-                    <a th:href="@{/login}">로그아웃</a>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit">로그아웃</button>
+                    </form>
                 </div>
             </details>
         </nav>
