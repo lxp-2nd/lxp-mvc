@@ -36,12 +36,6 @@ public class MemberController {
 		return "member/login";
 	}
 
-	@PostMapping("/logout")
-	public String logout(HttpServletRequest servletRequest) {
-		securitySessionManager.logoutAndInvalidateSession(servletRequest);
-		return "redirect:/login";
-	}
-
 	@PostMapping("/login")
 	public String doLogin(@Valid @ModelAttribute("loginRequest") LoginRequest request,
 		BindingResult bindingResult, HttpServletRequest servletRequest) {
