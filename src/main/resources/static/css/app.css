@@ -347,12 +347,26 @@ p {
     gap: 64px;
 }
 
+.cart-layout {
+    align-items: start;
+}
+
+.cart-layout .summary-card {
+    align-self: start;
+    position: sticky;
+    top: 24px;
+}
+
 .panel,
 .player-panel,
 .profile-card,
 .complete-card,
 .summary-card {
     padding: 24px;
+}
+
+.summary-card .btn + .btn {
+    margin-top: 12px;
 }
 
 .curriculum {
