@@ -91,7 +91,7 @@ public class CartService {
 
 		// 요청한 장바구니 항목 중 존재하지 않거나 이미 삭제된 항목이 있는 경우
 		if (cartItems.size() != uniqueCartItemIds.size()) {
-			throw new CustomException(ErrorCode.CART_DELETE_ACCESS_DENIED);
+			throw new CustomException(ErrorCode.CART_ITEM_NOT_FOUND);
 		}
 
 		// 선택한 항목 중 로그인한 회원의 장바구니 항목이 아닌 것이 있는지 확인
@@ -106,6 +106,9 @@ public class CartService {
 		cartItems.forEach(CartItem::delete);
 	}
 }
+
+
+
 
 
 
