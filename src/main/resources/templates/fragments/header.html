@@ -17,6 +17,7 @@
             <details class="menu" sec:authorize="isAuthenticated()">
                 <summary class="icon-link menu-toggle" aria-label="메뉴 열기">☰</summary>
                 <div class="menu-panel">
+                    <a th:href="@{/profile}">회원 정보</a>
                     <a th:href="@{/enrollment}">수강 목록</a>
                     <a th:href="@{/login}">로그아웃</a>
                 </div>
