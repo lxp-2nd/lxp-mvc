@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 
 import wanted.jjsbd.lxpmvc.config.JpaAuditingConfig;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
+import wanted.jjsbd.lxpmvc.course.domain.CourseInstructor;
 import wanted.jjsbd.lxpmvc.course.domain.Material;
 import wanted.jjsbd.lxpmvc.course.domain.MaterialType;
 import wanted.jjsbd.lxpmvc.course.domain.Section;
@@ -39,8 +40,10 @@ class CourseRepositoryTest {
 		Member instructor = Member.createBasicMember("일타강사", "test@test.com", "password123!");
 		memberRepository.save(instructor);
 
-		// given: 강의, 섹션 2개, 각 섹션당 자료 1개씩 생성
-		Course course = Course.createCourse(instructor, "테스트 강의", "설명");
+		// 👉 리팩토링: Member 객체 대신 CourseInstructor VO를 생성하여 전달합니다.
+		CourseInstructor instructorInfo = new CourseInstructor(instructor.getId(), instructor.getNickname(),
+			"일타강사 소개글");
+		Course course = Course.createCourse(instructorInfo, "테스트 강의", "설명");
 
 		Section section1 = Section.createSection(course, "섹션1", 1);
 		section1.getMaterials().add(Material.createMaterial(section1, "자료1", MaterialType.DOCUMENT, "url1", 1));
@@ -55,7 +58,6 @@ class CourseRepositoryTest {
 		courseRepository.saveAndFlush(course);
 
 		// when
-		// 🚨 여기서 이중 @EntityGraph 조인이 실행되며 하이버네이트가 예외를 터뜨립니다!
 		System.out.println("====== 쿼리 실행 시작 ======");
 		courseRepository.findByIdWithCurriculum(course.getId());
 		System.out.println("====== 쿼리 실행 종료 ======");
@@ -65,13 +67,19 @@ class CourseRepositoryTest {
 	@DisplayName("로그인한 회원은 자신이 수강 중인 강의가 목록에서 제외되어야 한다.")
 	void findAvailableCoursesForMember() {
 		// =========================================================
-		// 1. Given (테스트 환경 세팅: 학생 1명, 강의 2개, 수강신청 1개)
+		// 1. Given
+		// 👉 리팩토링: 로직의 자연스러움을 위해 '강사'와 '학생'을 명확히 분리했습니다.
 		// =========================================================
-		Member student = Member.createBasicMember("학생A", "test@test.com", "pw123!");
+		Member instructor = Member.createBasicMember("강사", "instructor@test.com", "pw123!");
+		em.persist(instructor);
+
+		Member student = Member.createBasicMember("학생A", "student@test.com", "pw123!");
 		em.persist(student);
 
-		Course course1 = Course.createCourse(student, "내가 수강한 강의", "설명");
-		Course course2 = Course.createCourse(student, "내가 안 들은 강의", "설명");
+		// 👉 리팩토링: VO를 통해 강사 정보를 주입합니다.
+		CourseInstructor info = new CourseInstructor(instructor.getId(), instructor.getNickname(), "강사입니다.");
+		Course course1 = Course.createCourse(info, "내가 수강한 강의", "설명");
+		Course course2 = Course.createCourse(info, "내가 안 들은 강의", "설명");
 		em.persist(course1);
 		em.persist(course2);
 
@@ -79,7 +87,7 @@ class CourseRepositoryTest {
 		Enrollment enrollment = Enrollment.createEnrollment(student, course1);
 		em.persist(enrollment);
 
-		// 영속성 컨텍스트 초기화 (실제 DB에 쿼리를 강제로 날리고 메모리를 비움 -> 실제 조회 환경과 똑같이 만듦)
+		// 영속성 컨텍스트 초기화
 		em.flush();
 		em.clear();
 
@@ -91,11 +99,9 @@ class CourseRepositoryTest {
 		// =========================================================
 		// 3. Then (검증)
 		// =========================================================
-		// 결과는 1개여야 하고, 그 1개는 '내가 안 들은 강의(course2)'여야 한다.
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getTitle()).isEqualTo("내가 안 들은 강의");
 
-		// 결과 목록에 '내가 수강한 강의(course1)'는 절대 포함되어선 안 된다.
 		assertThat(result).extracting(Course::getTitle)
 			.doesNotContain("내가 수강한 강의");
 	}
