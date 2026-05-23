@@ -60,40 +60,18 @@ public class EnrollmentController {
 	 */
 	@PostMapping("/courses/{courseId}/enroll")
 	public String enroll(
-		@PathVariable String courseId,
+		@PathVariable Long courseId,
 		@AuthenticationPrincipal AuthInfo authInfo
 	) {
+		// 1. courseId가 null인지 확인
+		// parameter에서 이미 Long이 아닌 경우에 checking 되긴 하지만 한번 더 체크(필요있나?) -> handleCustomException로 인해서 error/error로 분기(원래는 강의 목록으로 분기하려 함)
+		DomainValidator.validateNotBlank(String.valueOf(courseId));
 
-		try {
-			// 1. 로그인 사용자인지 확인
-			if (authInfo == null) {
-				throw new CustomException(ErrorCode.MEMBER_LOGIN_REQUIRED);
-			}
+		EnrollmentRequest request = new EnrollmentRequest(authInfo.memberId(), courseId);
+		enrollmentService.enroll(request);
 
-			// 2. courseId가 null인지 확인
-			DomainValidator.validateNotBlank(courseId);
-
-			EnrollmentRequest request = new EnrollmentRequest(authInfo.memberId(), Long.valueOf(courseId));
-			enrollmentService.enroll(request);
-
-			return "redirect:/enrollment/complete?courseId=" + request.courseId();
-		} catch (CustomException e) {
-			// 1. 비로그인 회원 접근 -> 로그인 화면
-			if (e.getErrorCode() == ErrorCode.MEMBER_LOGIN_REQUIRED) {
-				return "redirect:/member/login";
-			}
-
-			// 2. courseId에 대한 null 검증 에러 -> 강의상세 화면으로 갈수가 없어(courseId = null) -> 강의목록
-			if (e.getErrorCode() == ErrorCode.REQUIRED_VALUE_MISSING) {
-				return "redirect:/course/list";
-			}
-
-			// 3. 나머지 예외 -> 강의 상세 화면(이전 화면)
-			return "redirect:/courses/" + courseId;
-		} catch (Exception e) {
-			// 4. 나머지는 예외 -> 강의 상세 화면(이전 화면)
-			return "redirect:/courses/" + courseId;
-		}
+		// 성공 -> 강의 완료 화면
+		return "redirect:/enrollment/complete?courseId=" + request.courseId();
 	}
 
 	/**

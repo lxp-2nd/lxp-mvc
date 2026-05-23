@@ -45,21 +45,20 @@ public class EnrollmentService {
 	 */
 	@Transactional
 	public Long enroll(EnrollmentRequest request) {
-
 		// [비즈니스 로직 1] 중복 수강인지 확인
 		if (enrollmentRepository.existsByLearnerIdAndCourseId(request.learnerId(), request.courseId())) {
-			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
+			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
 		}
 
 		// 회원 조회
 		// ErrorCode 상황: 회원이 회원ID로 조회되지 않는 경우
 		Member learner = memberRepository.findById(request.learnerId())
-			.orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
+			.orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT, "/courses/" + request.courseId()));
 
 		// 강의 조회
 		// ErrorCode 상황: 강의가 강의ID로 조회되지 않는 경우
 		Course course = courseRepository.findById(request.courseId())
-			.orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
+			.orElseThrow(() -> new CustomException(ErrorCode.COURSE_NOT_FOUND, "/courses/" + request.courseId()));
 
 		Enrollment enrollment = Enrollment.createEnrollment(learner, course);
 
@@ -69,10 +68,10 @@ public class EnrollmentService {
 
 			return savedEnrollment.getId();
 		} catch (DataIntegrityViolationException e) {
-			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED);
+			throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
 		} catch (Exception e) {
 			// JPA에서의 문제 발생 및 기타 에러
-			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "/courses/" + request.courseId());
 		}
 	}
 
