@@ -9,7 +9,8 @@ public record CourseDetailResponse(
 	Long id,
 	String title,
 	String description,
-	String instructor,
+	String instructorName,
+	String instructorIntro,
 	List<SectionResponse> curriculum
 ) {
 	public static CourseDetailResponse of(Course course) {
@@ -23,7 +24,8 @@ public record CourseDetailResponse(
 			course.getId(),
 			course.getTitle(),
 			course.getDescription(),
-			course.getInstructor().getNickname(),
+			course.getInstructorInfo().getName(),
+			course.getInstructorInfo().getIntroduction(),
 			curriculumList
 		);
 	}

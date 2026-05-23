@@ -18,7 +18,7 @@ public record CourseResponse(
 		return new CourseResponse(
 			course.getId(),
 			course.getTitle(),
-			course.getInstructor().getNickname(),
+			course.getInstructorInfo().getName(),
 			course.getDescription(),
 			course.getLearnerCount(),
 			List.of()

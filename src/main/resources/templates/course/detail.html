@@ -9,7 +9,7 @@
         <div class="detail-copy">
             <h1 th:text="${course.title}">서비스 기획 MVP</h1>
             <p th:text="${course.description}">강의 설명 영역. 강의 목표를 확인한다.</p>
-            <p class="muted">강사: <span th:text="${course.instructor}">강사명</span></p>
+            <p class="muted">강사: <span th:text="${course.instructorName}">강사명</span></p>
             <div class="button-row">
                 <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
                     <button class="btn primary" type="submit">바로 신청</button>
@@ -35,8 +35,10 @@
             </div>
         </div>
         <div class="panel">
-            <h2>강사 정보</h2>
-            <p>강사명, 소개, 주요 경력 또는 전문 분야가 표시됩니다.</p>
+            <h3>강사 정보</h3>
+            <h4 th:text="${course.instructorName}"
+                style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #1f2329;">강사명</h4>
+            <p th:text="${course.instructorIntro}">강사 소개글 영역입니다. 데이터가 없을 경우 이 텍스트가 대체됩니다.</p>
         </div>
     </section>
 </main>
