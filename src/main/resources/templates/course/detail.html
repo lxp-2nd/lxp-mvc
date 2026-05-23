@@ -14,8 +14,8 @@
                 <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
                     <button class="btn primary" type="submit">바로 신청</button>
                 </form>
-                <form th:action="@{/courses/{id}/cart(id=${course.id})}" method="post">
-                    <button class="btn ghost" type="submit">장바구니 담기</button>
+                <form th:action="@{/courses/{courseId}/cart(courseId=${course.id})}" method="post">
+                    <button type="submit" class="btn primary">장바구니 담기</button>
                 </form>
             </div>
         </div>

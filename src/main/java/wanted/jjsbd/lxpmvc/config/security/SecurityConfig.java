@@ -1,4 +1,4 @@
-package wanted.jjsbd.lxpmvc.config;
+package wanted.jjsbd.lxpmvc.config.security;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,16 +21,22 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationEntryPoint authenticationEntryPoint,
+		AccessDeniedHandler accessDeniedHandler) throws
+		Exception {
 		http
 			.csrf(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 				.requestMatchers(HttpMethod.GET, "/courses", "/courses/{courseId}", "/").permitAll()
 				.requestMatchers("/login", "/signup").permitAll()
-				.anyRequest().authenticated()
+				.anyRequest().hasAnyRole("BASIC", "INSTRUCTOR", "ADMIN")
 			)
-			.formLogin(AbstractHttpConfigurer::disable);
+			.formLogin(AbstractHttpConfigurer::disable)
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint(authenticationEntryPoint)
+				.accessDeniedHandler(accessDeniedHandler)
+			);
 		return http.build();
 	}
 

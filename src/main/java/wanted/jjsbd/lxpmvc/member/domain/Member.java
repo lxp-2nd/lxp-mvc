@@ -23,7 +23,10 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
-
+	private static final int MIN_NICKNAME_LENGTH = 2;
+	private static final int MAX_NICKNAME_LENGTH = 20;
+	private static final int MAX_EMAIL_LENGTH = 100;
+	private static final int MAX_PASSWORD_HASH_LENGTH = 200;
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 
 	@Id
@@ -31,13 +34,13 @@ public class Member extends BaseEntity {
 	@Column(name = "member_id")
 	private Long id;
 
-	@Column(nullable = false, length = 20)
+	@Column(nullable = false, length = MAX_NICKNAME_LENGTH)
 	private String nickname;
 
-	@Column(nullable = false, unique = true, length = 100)
+	@Column(nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
 	private String email;
 
-	@Column(name = "password_hash", nullable = false, length = 200)
+	@Column(name = "password_hash", nullable = false, length = MAX_PASSWORD_HASH_LENGTH)
 	private String passwordHash;
 
 	@Column(name = "profile_img")
@@ -71,21 +74,21 @@ public class Member extends BaseEntity {
 
 	private void validateNickname(String nickname) {
 		DomainValidator.validateNotBlank(nickname);
-		if (nickname.length() > 20) {
+		if (nickname.length() < MIN_NICKNAME_LENGTH || nickname.length() > MAX_NICKNAME_LENGTH) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_NAME);
 		}
 	}
 
 	private void validateEmail(String email) {
 		DomainValidator.validateNotBlank(email);
-		if (email.length() > 100 || !EMAIL_PATTERN.matcher(email).matches()) {
+		if (email.length() > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.matcher(email).matches()) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_EMAIL_FORMAT);
 		}
 	}
 
 	private void validatePasswordHash(String passwordHash) {
 		DomainValidator.validateNotBlank(passwordHash);
-		if (passwordHash.length() > 200) {
+		if (passwordHash.length() > MAX_PASSWORD_HASH_LENGTH) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_PASSWORD);
 		}
 	}

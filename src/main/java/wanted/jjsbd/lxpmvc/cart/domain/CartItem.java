@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 
 @Entity
@@ -34,4 +35,21 @@ public class CartItem extends BaseEntity {
 	@JoinColumn(name = "course_id", nullable = false)
 	private Course course;
 
+	private CartItem(Cart cart, Course course) {
+		DomainValidator.validateNotNull(cart);
+		DomainValidator.validateNotNull(course);
+		this.cart = cart;
+		this.course = course;
+	}
+
+	public static CartItem create(Cart cart, Course course) {
+		return new CartItem(cart, course);
+	}
+
 }
+
+
+
+
+
+
