@@ -1,9 +1,14 @@
 package wanted.jjsbd.lxpmvc.course.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import wanted.jjsbd.lxpmvc.config.JpaAuditingConfig;
@@ -11,6 +16,7 @@ import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.course.domain.Material;
 import wanted.jjsbd.lxpmvc.course.domain.MaterialType;
 import wanted.jjsbd.lxpmvc.course.domain.Section;
+import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 import wanted.jjsbd.lxpmvc.member.repository.MemberRepository;
 
@@ -22,6 +28,9 @@ class CourseRepositoryTest {
 
 	@Autowired
 	private MemberRepository memberRepository;
+
+	@Autowired
+	private TestEntityManager em;
 
 	@Test
 	@DisplayName("이중 조인(@EntityGraph)을 시도하면 MultipleBagFetchException이 발생해야 한다.")
@@ -50,5 +59,44 @@ class CourseRepositoryTest {
 		System.out.println("====== 쿼리 실행 시작 ======");
 		courseRepository.findByIdWithCurriculum(course.getId());
 		System.out.println("====== 쿼리 실행 종료 ======");
+	}
+
+	@Test
+	@DisplayName("로그인한 회원은 자신이 수강 중인 강의가 목록에서 제외되어야 한다.")
+	void findAvailableCoursesForMember() {
+		// =========================================================
+		// 1. Given (테스트 환경 세팅: 학생 1명, 강의 2개, 수강신청 1개)
+		// =========================================================
+		Member student = Member.createBasicMember("학생A", "test@test.com", "pw123!");
+		em.persist(student);
+
+		Course course1 = Course.createCourse(student, "내가 수강한 강의", "설명");
+		Course course2 = Course.createCourse(student, "내가 안 들은 강의", "설명");
+		em.persist(course1);
+		em.persist(course2);
+
+		// 학생A가 course1만 수강 신청함
+		Enrollment enrollment = Enrollment.createEnrollment(student, course1);
+		em.persist(enrollment);
+
+		// 영속성 컨텍스트 초기화 (실제 DB에 쿼리를 강제로 날리고 메모리를 비움 -> 실제 조회 환경과 똑같이 만듦)
+		em.flush();
+		em.clear();
+
+		// =========================================================
+		// 2. When (실행: 학생A의 ID로 신청 가능한 강의 목록 조회)
+		// =========================================================
+		List<Course> result = courseRepository.findAvailableCoursesForMember("", student.getId());
+
+		// =========================================================
+		// 3. Then (검증)
+		// =========================================================
+		// 결과는 1개여야 하고, 그 1개는 '내가 안 들은 강의(course2)'여야 한다.
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getTitle()).isEqualTo("내가 안 들은 강의");
+
+		// 결과 목록에 '내가 수강한 강의(course1)'는 절대 포함되어선 안 된다.
+		assertThat(result).extracting(Course::getTitle)
+			.doesNotContain("내가 수강한 강의");
 	}
 }
