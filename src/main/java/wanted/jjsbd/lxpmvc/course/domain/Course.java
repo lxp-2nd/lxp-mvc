@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Formula;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,6 +49,10 @@ public class Course extends BaseEntity {
 	@BatchSize(size = 100)
 	@OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Section> sections = new ArrayList<>();
+
+	// 테이블의 컬럼이 생기는 것 아님. JPA
+	@Formula("(SELECT COUNT(*) FROM enrollments e WHERE e.course_id = id)")
+	private Integer learnerCount;
 
 	private Course(Member instructor, String title, String description) {
 		this.instructor = instructor;

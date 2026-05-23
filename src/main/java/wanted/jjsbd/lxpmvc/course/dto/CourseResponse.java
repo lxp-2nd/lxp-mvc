@@ -20,7 +20,7 @@ public record CourseResponse(
 			course.getTitle(),
 			course.getInstructor().getNickname(),
 			course.getDescription(),
-			null,
+			course.getLearnerCount(),
 			List.of()
 		);
 	}
