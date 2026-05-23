@@ -64,7 +64,8 @@ public class EnrollmentController {
 		@AuthenticationPrincipal AuthInfo authInfo
 	) {
 		// 1. courseId가 null인지 확인
-		// parameter에서 이미 Long이 아닌 경우에 checking 되긴 하지만 한번 더 체크(필요있나?) -> handleCustomException로 인해서 error/error로 분기(원래는 강의 목록으로 분기하려 함)
+		// parameter에서 이미 Long이 아닌 경우에 checking 되긴 하지만 한번 더 체크(필요있나?)
+		// -> handleCustomException로 인해서 error/error로 분기(원래는 강의 목록으로 분기하려 함)
 		DomainValidator.validateNotBlank(String.valueOf(courseId));
 
 		EnrollmentRequest request = new EnrollmentRequest(authInfo.memberId(), courseId);

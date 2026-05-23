@@ -13,17 +13,17 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
 	public String handleCustomException(
-		CustomException e,
+		CustomException ex,
 		HttpServletRequest request,
 		RedirectAttributes redirectAttributes
 	) {
-		ErrorCode errorCode = e.getErrorCode();
+		ErrorCode errorCode = ex.getErrorCode();
 		log.debug(errorCode.toString());
 
-		redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+		redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
 
-		if (e.getRedirectUrl() != null) {
-			return "redirect:" + e.getRedirectUrl();
+		if (ex.getRedirectUrl() != null) {
+			return "redirect:" + ex.getRedirectUrl();
 		}
 
 		return "error/error";
