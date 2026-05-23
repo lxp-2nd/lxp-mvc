@@ -47,17 +47,12 @@ public class Enrollment extends BaseEntity {
 
 	// 수강 도메인 생성(정적 팩토리 메서드)
 	public static Enrollment createEnrollment(Member member, Course course) {
-		try {
-			// 유효성검사(null check)
-			DomainValidator.validateNotNull(member);
-			DomainValidator.validateNotNull(course);
+		// 유효성검사(null check)
+		DomainValidator.validateNotNull(member);
+		DomainValidator.validateNotNull(course);
 
-			Enrollment enrollment = new Enrollment(member, course);
-			return enrollment;
-
-		} catch (CustomException e) {
-			e.getStackTrace();
-			return null;
-		}
+		Enrollment enrollment = new Enrollment(member, course);
+		return enrollment;
 	}
 }
+
