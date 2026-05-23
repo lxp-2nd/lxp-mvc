@@ -4,29 +4,30 @@
 <body>
 <div th:replace="~{fragments/header :: appHeader(${title})}"></div>
 <main class="container">
-	<section class="section-heading">
-		<h1>신청 가능한 무료 강의</h1>
-		<p>신청 등록된 강의를 탐색하고 장바구니에 담거나 상세 정보를 확인합니다.</p>
-	</section>
+    <section class="section-heading">
+        <h1>신청 가능한 무료 강의</h1>
+        <p>신청 등록된 강의를 탐색하고 장바구니에 담거나 상세 정보를 확인합니다.</p>
+    </section>
 
-	<div th:if="${courses.isEmpty()}" style="text-align: center; padding: 50px 0; color: #666;">
-		<p>신청 가능한 강의가 없습니다.</p>
-	</div>
+    <div th:if="${courses.isEmpty()}" style="text-align: center; padding: 50px 0; color: #666;">
+        <p>신청 가능한 강의가 없습니다.</p>
+    </div>
 
-	<section th:unless="${courses.isEmpty()}" class="course-grid" aria-label="강의 목록">
-		<article class="course-card" th:each="course : ${courses}">
-			<div class="thumb">강의 썸네일</div>
-			<h2>
-				<a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}">서비스 기획 MVP</a>
-			</h2>
-			<p th:text="${course.instructor}">강사명</p>
-			<div class="course-card-footer">
-				<p th:text="|${course.learnerCount}명 수강중|">n명 수강중</p>
-				<a class="btn ghost" th:href="@{/courses/{id}(id=${course.id})}">상세 보기</a>
-			</div>
+    <section th:unless="${courses.isEmpty()}" class="course-grid" aria-label="강의 목록">
+        <article class="course-card" th:each="course : ${courses}">
+            <div class="thumb">
+                <img th:src="@{/images/default-course.png}" alt="강의 썸네일"
+                     style="width: 100%; height: 100%; object-fit: contain;"></div>
+            <a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}">서비스 기획 MVP</a>
+            </h2>
+            <p th:text="${course.instructor}">강사명</p>
+            <div class="course-card-footer">
+                <p th:text="|${course.learnerCount}명 수강중|">n명 수강중</p>
+                <a class="btn ghost" th:href="@{/courses/{id}(id=${course.id})}">상세 보기</a>
+            </div>
 
-		</article>
-	</section>
+        </article>
+    </section>
 </main>
 </body>
 </html>
