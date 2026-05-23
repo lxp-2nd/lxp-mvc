@@ -1,9 +1,7 @@
 package wanted.jjsbd.lxpmvc.course.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,15 +27,14 @@ public class CourseController {
 	@GetMapping("/courses")
 	public String courses(
 		CourseSearchRequest request,
-		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		Model model
 	) {
-		Page<CourseResponse> coursePage = courseService.getCourses(request, pageable);
+		List<CourseResponse> courseList = courseService.getCourses(request);
 
 		model.addAttribute("title", "강의 목록");
 		model.addAttribute("query", request.q());
 
-		model.addAttribute("courses", coursePage.getContent());
+		model.addAttribute("courses", courseList);
 
 		return "course/list";
 

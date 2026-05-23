@@ -1,7 +1,7 @@
 package wanted.jjsbd.lxpmvc.course.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,15 +25,17 @@ public class CourseService {
 	/**
 	 * 강의 목록 조회 (검색 및 페이징 포함)
 	 */
-	public Page<CourseResponse> getCourses(CourseSearchRequest request, Pageable pageable) {
+	public List<CourseResponse> getCourses(CourseSearchRequest request) {
 		/// 1. DTO에서 검색어(q) 거내기 (null일 경우 ""로 변환되어있음)
 		String keyword = request.q();
 
 		/// 2. Repository 호출: DB에서 강의 목록(Entity) 가져오기
-		Page<Course> coursePage = courseRepository.findByTitleContainingAndDeletedAtIsNull(keyword, pageable);
+		List<Course> courseList = courseRepository.findByTitleContainingAndDeletedAtIsNullOrderByCreatedAtDesc(keyword);
 
 		/// 3. Entity -> DTO 변환 후 반환
-		return coursePage.map(CourseResponse::of);
+		return courseList.stream()
+			.map(CourseResponse::of)
+			.toList();
 	}
 
 	/**
