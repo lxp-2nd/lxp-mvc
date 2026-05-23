@@ -32,9 +32,11 @@ public class CourseService {
 		String keyword = request.q();
 		List<Course> courseList;
 
-		if (memberId == null) {/// 1. 비로그인: 전체 강의 조회
+		if (memberId == null) {
+			/// 1. 비로그인: 전체 강의 조회
 			courseList = courseRepository.findByTitleContainingAndDeletedAtIsNullOrderByCreatedAtDesc(keyword);
-		} else {/// 2. 로그인: 이미 수강중인 강의 제외
+		} else {
+			/// 2. 로그인: 이미 수강중인 강의 제외
 			courseList = courseRepository.findAvailableCoursesForMember(keyword, memberId);
 		}
 
