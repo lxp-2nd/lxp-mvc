@@ -9,16 +9,23 @@
         <form th:action="@{/login}" th:object="${loginRequest}" method="post" class="form-stack" novalidate>
             <label>이메일
                 <input type="email" th:field="*{email}" placeholder="name@example.com" autocomplete="email" required
-                       aria-invalid="false" aria-describedby="email-error"
+                       th:aria-invalid="${#fields.hasErrors('email')} ? 'true' : 'false'"
+                       aria-describedby="email-error"
                        data-error-required="이메일을 입력해주세요." data-error-invalid="올바른 이메일 형식으로 입력해주세요.">
-                <span id="email-error" class="field-error" aria-live="polite"></span>
+
+                <span id="email-error" class="field-error" aria-live="polite"
+                      th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이메일 에러 메시지 위치</span>
             </label>
+
             <label>비밀번호
                 <input type="password" th:field="*{password}" placeholder="비밀번호 입력"
                        autocomplete="current-password" required
-                       aria-invalid="false" aria-describedby="password-error"
+                       th:aria-invalid="${#fields.hasErrors('password')} ? 'true' : 'false'"
+                       aria-describedby="password-error"
                        data-error-required="비밀번호를 입력해주세요.">
-                <span id="password-error" class="field-error" aria-live="polite"></span>
+
+                <span id="password-error" class="field-error" aria-live="polite"
+                      th:if="${#fields.hasErrors('password')}" th:errors="*{password}">비밀번호 에러 메시지 위치</span>
             </label>
             <button class="btn primary" type="submit">로그인</button>
         </form>

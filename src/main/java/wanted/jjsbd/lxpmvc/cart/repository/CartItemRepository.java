@@ -16,21 +16,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 	List<CartItem> findAllByCartItemIdInAndDeletedAtIsNull(List<Long> cartItemIds);
 
 	Optional<CartItem> findByCartAndCourse(Cart cart, Course course);
+
+	boolean existsByCartAndCourse(Cart cart, Course course);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity
@@ -35,6 +36,7 @@ public class Cart {
 	private List<CartItem> cartItems = new ArrayList<>();
 
 	private Cart(Member member) {
+		DomainValidator.validateNotNull(member);
 		this.member = member;
 	}
 
@@ -42,4 +44,6 @@ public class Cart {
 		return new Cart(member);
 	}
 }
+
+
 
