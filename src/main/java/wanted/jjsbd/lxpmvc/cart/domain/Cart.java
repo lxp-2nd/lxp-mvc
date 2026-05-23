@@ -11,11 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity
@@ -34,4 +34,16 @@ public class Cart {
 
 	@OneToMany(mappedBy = "cart")
 	private List<CartItem> cartItems = new ArrayList<>();
+
+	private Cart(Member member) {
+		DomainValidator.validateNotNull(member);
+		this.member = member;
+	}
+
+	public static Cart create(Member member) {
+		return new Cart(member);
+	}
 }
+
+
+

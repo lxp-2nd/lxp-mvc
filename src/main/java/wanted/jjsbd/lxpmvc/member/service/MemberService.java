@@ -31,7 +31,7 @@ public class MemberService {
 	}
 
 	@Transactional
-	public Long signup(MemberCreateRequest request) {
+	public AuthInfo signup(MemberCreateRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
 		if (memberRepository.existsByEmail(normalizedEmail)) {
 			throw new CustomException(ErrorCode.MEMBER_DUPLICATE_EMAIL);
@@ -43,6 +43,6 @@ public class MemberService {
 			passwordHash
 		);
 		Member savedMember = memberRepository.save(newMember);
-		return savedMember.getId();
+		return AuthInfo.from(savedMember);
 	}
 }
