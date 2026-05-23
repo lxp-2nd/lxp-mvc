@@ -23,16 +23,21 @@ public class CourseService {
 	private final CourseRepository courseRepository;
 
 	/**
-	 * 강의 목록 조회 (검색 및 페이징 포함)
+	 * 강의 목록 조회
+	 * @param  request 검색어 DTO
+	 * @param memberId 현재 로그인한 사용자의 식별.
+	 * 최종 DTO 반환
 	 */
-	public List<CourseResponse> getCourses(CourseSearchRequest request) {
-		/// 1. DTO에서 검색어(q) 거내기 (null일 경우 ""로 변환되어있음)
+	public List<CourseResponse> getCourses(CourseSearchRequest request, Long memberId) {
 		String keyword = request.q();
+		List<Course> courseList;
 
-		/// 2. Repository 호출: DB에서 강의 목록(Entity) 가져오기
-		List<Course> courseList = courseRepository.findByTitleContainingAndDeletedAtIsNullOrderByCreatedAtDesc(keyword);
+		if (memberId == null) {/// 1. 비로그인: 전체 강의 조회
+			courseList = courseRepository.findByTitleContainingAndDeletedAtIsNullOrderByCreatedAtDesc(keyword);
+		} else {/// 2. 로그인: 이미 수강중인 강의 제외
+			courseList = courseRepository.findAvailableCoursesForMember(keyword, memberId);
+		}
 
-		/// 3. Entity -> DTO 변환 후 반환
 		return courseList.stream()
 			.map(CourseResponse::of)
 			.toList();
@@ -44,7 +49,6 @@ public class CourseService {
 	 * @Request CourseDetailResponse DTO 반환
 	 */
 	public CourseDetailResponse getCourseDetails(Long courseId) {
-		/// 강의와 연관된 섹션/자료를 한번에 조회한다.
 		Course course = courseRepository.findByIdWithCurriculum(courseId)
 			/// 데이터가 없거나 이미 삭제 (deletedAt != null)된 강의면 에러 빵
 			.orElseThrow(() -> new CustomException(ErrorCode.COURSE_NOT_FOUND));
