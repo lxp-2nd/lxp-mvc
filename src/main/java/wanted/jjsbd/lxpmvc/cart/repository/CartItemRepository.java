@@ -11,12 +11,18 @@ import wanted.jjsbd.lxpmvc.course.domain.Course;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
+	// 장바구니 조회. 삭제되지 않은 항목만 담은 최신순으로 조회한다.
 	List<CartItem> findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(Cart cart);
 
-	List<CartItem> findAllByCartItemIdInAndDeletedAtIsNull(List<Long> cartItemIds);
-
+	// 장바구니 담기. 삭제된 항목도 복구 대상이므로 삭제 여부와 관계없이 조회한다.
 	Optional<CartItem> findByCartAndCourse(Cart cart, Course course);
 
-	boolean existsByCartAndCourse(Cart cart, Course course);
-
+	// 장바구니 삭제. 로그인한 회원의 삭제되지 않은 장바구니 항목만 조회한다.
+	List<CartItem> findAllByCart_Member_IdAndCartItemIdInAndDeletedAtIsNull(
+		Long memberId,
+		List<Long> cartItemIds
+	);
 }
+
+
+
