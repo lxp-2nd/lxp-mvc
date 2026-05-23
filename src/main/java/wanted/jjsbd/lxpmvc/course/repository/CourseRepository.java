@@ -14,8 +14,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
 	Page<Course> findByTitleContainingAndDeletedAtIsNull(String title, Pageable pageable);
 
-	@Query("SELECT c FROM Course c " +
-		"LEFT JOIN FETCH c.sections " +
-		"WHERE c.id = :id AND c.deletedAt IS NULL")
+	@Query("SELECT c FROM Course c " + "LEFT JOIN FETCH c.sections " + "WHERE c.id = :id AND c.deletedAt IS NULL")
 	Optional<Course> findByIdWithCurriculum(@Param("id") Long id);
 }
