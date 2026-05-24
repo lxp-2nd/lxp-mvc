@@ -15,7 +15,7 @@
             <div>
                 <h2 th:text="${enrollment.courseTitle}">서비스 기획 MVP</h2>
                 <p><span th:text="${enrollment.instructor}">강사명</span> · <span
-                        th:text="${enrollment.statusText}">신청됨</span></p>
+                        th:text="'신청일(' + ${enrollment.createdAt} + ')'">신청됨</span></p>
             </div>
             <a class="btn primary" th:href="@{/courses/{id}(id=${enrollment.courseId})}">상세 보기</a>
         </article>
