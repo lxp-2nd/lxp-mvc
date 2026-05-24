@@ -32,13 +32,6 @@ public class EnrollmentService {
 		this.courseRepository = courseRepository;
 	}
 
-	// 수강신청(DB 저장)
-	public Enrollment createEnrollment(Enrollment enrollment) {
-		Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
-		return savedEnrollment;
-		// return enrollmentRepository.save(enrollment); 로 축약 가능
-	}
-
 	/**
 	 * 수강신청
 	 * @return Long enrollmentId
