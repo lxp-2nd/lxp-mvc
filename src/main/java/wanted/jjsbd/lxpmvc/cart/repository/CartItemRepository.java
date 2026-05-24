@@ -24,8 +24,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 		select ci
 		from CartItem ci
 		where ci.cart.member.id = :memberId
-		  and ci.cartItemId in :cartItemIds
-		  and ci.deletedAt is null
+			and ci.cartItemId in :cartItemIds
+			and ci.deletedAt is null
 		""")
 	List<CartItem> findDeletableCartItems(
 		@Param("memberId") Long memberId,
