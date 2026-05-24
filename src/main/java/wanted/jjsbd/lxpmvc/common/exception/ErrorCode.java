@@ -34,11 +34,14 @@ public enum ErrorCode {
 	MEMBER_PROFILE_IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "MEMBER_013", "프로필 이미지는 5MB 이하로 업로드해주세요."),
 	MEMBER_ALREADY_WITHDRAWN(HttpStatus.CONFLICT, "MEMBER_014", "이미 탈퇴 처리된 계정입니다."),
 	MEMBER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_015", "회원 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
+	MEMBER_NOT_FOUND (HttpStatus.NOT_FOUND, "MEMBER_016", "회원을 찾을 수 없습니다."),
+
 
 	// Course
 	COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
 	COURSE_INSTRUCTOR_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_002", "강사 정보는 필수입니다."),
 	COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_003", "존재하지 않는 강의입니다."),
+	COURSE_ALREADY_WITHDRAWN(HttpStatus.CONFLICT, "COURSE_004", "폐강된 강의입니다."),
 
 	SECTION_COURSE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_001", "소속된 강의 정보는 필수입니다."),
 	SECTION_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_002", "섹션 제목은 필수/비어있을 수 없습니다."),
