@@ -19,7 +19,9 @@
                 <div class="menu-panel">
                     <a th:href="@{/profile}">회원 정보</a>
                     <a th:href="@{/enrollment}">수강 목록</a>
-                    <a th:href="@{/login}">로그아웃</a>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit">로그아웃</button>
+                    </form>
                 </div>
             </details>
             <a class="btn ghost" th:href="@{/login}" sec:authorize="isAnonymous()">로그인</a>
