@@ -72,14 +72,10 @@ public class CartService {
 			.distinct()
 			.toList();
 
-		// 로그인한 회원의 장바구니 항목 중 삭제되지 않은 항목만 조회한다.
-		List<CartItem> cartItems =
-			cartItemRepository.findAllByCart_Member_IdAndCartItemIdInAndDeletedAtIsNull(
-				memberId,
-				uniqueCartItemIds
-			);
+		// 삭제 요청한 cartItemId 중 로그인한 회원의 삭제 가능한 장바구니 항목만 조회한다.
+		List<CartItem> cartItems = cartItemRepository.findDeletableCartItems(memberId, uniqueCartItemIds);
 
-		// 요청한 항목 중 존재하지 않거나, 이미 삭제됐거나, 로그인한 회원의 장바구니 항목이 아닌 경우
+		// 삭제 요청한 항목이 모두 조회되지 않으면 존재하지 않거나, 이미 삭제됐거나, 본인 항목이 아닌 경우로 판단한다.
 		if (cartItems.size() != uniqueCartItemIds.size()) {
 			throw new CustomException(ErrorCode.CART_ITEM_NOT_FOUND);
 		}
@@ -119,7 +115,7 @@ public class CartService {
 
 	// 삭제되지 않은 장바구니 항목만 담은 최신순으로 조회하여 응답 DTO로 변환한다.
 	private CartResponse toCartResponse(Cart cart) {
-		List<CartItemResponse> cartItems = cartItemRepository.findByCartAndDeletedAtIsNullOrderByCreatedAtDesc(cart)
+		List<CartItemResponse> cartItems = cartItemRepository.findByCartAndDeletedAtIsNullOrderByModifiedAtDesc(cart)
 			.stream()
 			.map(CartItemResponse::from)
 			.toList();
@@ -127,6 +123,4 @@ public class CartService {
 		return CartResponse.from(cartItems);
 	}
 }
-
-
 

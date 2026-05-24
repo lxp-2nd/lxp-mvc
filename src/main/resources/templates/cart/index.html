@@ -37,7 +37,7 @@
                     <p th:text="${cartItem.instructor}">강사명</p>
                     <p th:text="${cartItem.courseDescription}">강의 설명</p>
                     <p class="muted"
-                       th:text="${cartItem.createdAt != null ? #temporals.format(cartItem.createdAt, 'yyyy-MM-dd HH:mm') : '담은 일시 없음'}">
+                       th:text="${cartItem.modifiedAt != null ? #temporals.format(cartItem.modifiedAt, 'yyyy-MM-dd HH:mm') : '담은 일시 없음'}">
                         2026-05-19 10:00
                     </p>
                 </div>
@@ -159,18 +159,4 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
