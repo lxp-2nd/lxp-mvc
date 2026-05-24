@@ -47,7 +47,7 @@ public class MemberController {
 			AuthInfo authInfo = memberService.login(request);
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.warn("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
+			log.info("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/login";
 		}
@@ -78,7 +78,7 @@ public class MemberController {
 			AuthInfo authInfo = memberService.signup(request.toMemberCreateRequest());
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.warn("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
+			log.info("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/signup";
 		}
