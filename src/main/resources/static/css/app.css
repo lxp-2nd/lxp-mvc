@@ -176,7 +176,8 @@ a {
 
 .menu-panel a:hover,
 .menu-panel form button:hover {
-	background: var(--soft);
+    background: var(--soft);
+}
 .menu-panel a {
     display: flex;
     align-items: center;
