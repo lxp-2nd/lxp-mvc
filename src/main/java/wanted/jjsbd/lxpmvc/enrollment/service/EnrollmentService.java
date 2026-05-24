@@ -59,7 +59,8 @@ public class EnrollmentService {
 
 		// 3. 회원과 강의는 있는 것으로 확인 수강 로직 진행
 		// upsert로 진행(soft delete로 수강-회원이 남아있을 경우 재수강이 불가 함)
-		Optional<Enrollment> enrollmentOpt = enrollmentRepository.findByLearnerIdAndCourseId(request.learnerId(), request.courseId());
+		Optional<Enrollment> enrollmentOpt = enrollmentRepository.findByLearnerIdAndCourseId(
+			request.learnerId(), request.courseId());
 
 		if (enrollmentOpt.isPresent()) {
 			Enrollment enrollment = enrollmentOpt.get();
@@ -67,7 +68,8 @@ public class EnrollmentService {
 			// 3-1. 이미 정상적으로 수강 중인 경우 (중복 신청 방어)
 			// [비즈니스 로직 1] 중복 수강인지 확인(deletedAt null여부로 확인)
 			if (!enrollment.isDeleted()) {
-				throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
+				throw new CustomException(
+					ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
 			}
 
 			// 3-2. Soft Delete된 데이터가 있는 경우 -> 복구 (Update)
@@ -83,7 +85,8 @@ public class EnrollmentService {
 
 				return savedEnrollment.getId();
 			} catch (DataIntegrityViolationException e) {
-				throw new CustomException(ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
+				throw new CustomException(
+					ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
 			} catch (Exception e) {
 				// JPA에서의 문제 발생 및 기타 에러
 				throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "/courses/" + request.courseId());
