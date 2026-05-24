@@ -21,4 +21,12 @@ public class SecuritySessionManager {
 		HttpSession session = servletRequest.getSession(true);
 		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 	}
+
+	public void logoutAndInvalidateSession(HttpServletRequest servletRequest) {
+		SecurityContextHolder.clearContext();
+		HttpSession session = servletRequest.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+	}
 }

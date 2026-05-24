@@ -55,6 +55,12 @@ public class MemberController {
 		return "redirect:/courses";
 	}
 
+	@PostMapping("/logout")
+	public String logout(HttpServletRequest servletRequest) {
+		securitySessionManager.logoutAndInvalidateSession(servletRequest);
+		return "redirect:/courses";
+	}
+
 	@GetMapping("/signup")
 	public String signup(Model model) {
 		model.addAttribute("title", "회원가입");
