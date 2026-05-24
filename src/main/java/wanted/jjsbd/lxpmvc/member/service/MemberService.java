@@ -11,6 +11,7 @@ import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
 import wanted.jjsbd.lxpmvc.member.dto.MemberCreateRequest;
+import wanted.jjsbd.lxpmvc.member.dto.MemberResponse;
 import wanted.jjsbd.lxpmvc.member.repository.MemberRepository;
 
 @Service
@@ -28,6 +29,13 @@ public class MemberService {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_CREDENTIALS);
 		}
 		return AuthInfo.from(member);
+	}
+
+	public MemberResponse getProfile(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.filter(existingMember -> !existingMember.isDeleted())
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+		return MemberResponse.from(member);
 	}
 
 	@Transactional

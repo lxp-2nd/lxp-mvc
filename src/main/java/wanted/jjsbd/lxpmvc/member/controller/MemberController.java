@@ -1,5 +1,6 @@
 package wanted.jjsbd.lxpmvc.member.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import wanted.jjsbd.lxpmvc.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.config.security.SecuritySessionManager;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
@@ -25,8 +26,8 @@ import wanted.jjsbd.lxpmvc.member.service.MemberService;
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
-	private final MockLxpData mockData;
 	private final MemberService memberService;
+	private final CartService cartService;
 	private final SecuritySessionManager securitySessionManager;
 
 	@GetMapping("/login")
@@ -87,13 +88,12 @@ public class MemberController {
 	}
 
 	@GetMapping("/profile")
-	public String profile(Model model) {
-		MemberResponse member = mockData.member();
-
+	public String profile(@AuthenticationPrincipal AuthInfo authInfo, Model model) {
+		MemberResponse member = memberService.getProfile(authInfo.memberId());
 		model.addAttribute("title", "내 정보");
 		model.addAttribute("member", member);
-		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.name(), member.email()));
-		model.addAttribute("cartCount", mockData.cartCourses().size());
+		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname(), member.email()));
+		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 		return "member/edit";
 	}
 
