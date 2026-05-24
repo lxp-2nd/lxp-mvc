@@ -1,22 +1,27 @@
 package wanted.jjsbd.lxpmvc.enrollment.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.course.repository.CourseRepository;
 import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
+import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCourseResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.repository.EnrollmentRepository;
 import wanted.jjsbd.lxpmvc.member.domain.Member;
 import wanted.jjsbd.lxpmvc.member.repository.MemberRepository;
 
+
 @Service
+@Transactional(readOnly = true)
 public class EnrollmentService {
 
 	private final EnrollmentRepository enrollmentRepository;
@@ -92,6 +97,17 @@ public class EnrollmentService {
 				throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "/courses/" + request.courseId());
 			}
 		}
+	}
+
+	/**
+	 * 수강 목록 조회
+	 * @param learnerId
+	 * @return
+	 */
+	public List<EnrollmentCourseResponse> getEnrollments(Long learnerId) {
+		return enrollmentRepository.findAllByLearnerId(learnerId).stream()
+			.map(EnrollmentCourseResponse::from)
+			.collect(Collectors.toList());
 	}
 
 }
