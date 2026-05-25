@@ -33,10 +33,12 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 	);
 
 	// min 추가
-	@Query("SELECT ci FROM CartItem ci " +
-		"WHERE ci.cart.member.id = :memberId " +
-		"AND ci.course.id IN :courseIds " +
-		"AND ci.deletedAt IS NULL")
+	@Query("""
+		SELECT ci FROM CartItem ci
+		WHERE ci.cart.member.id = :memberId
+		AND ci.course.id IN :courseIds
+		AND ci.deletedAt IS NULL
+		""")
 	List<CartItem> findCartItemsByCourseIds(
 		@Param("memberId") Long memberId,
 		@Param("courseIds") List<Long> courseIds

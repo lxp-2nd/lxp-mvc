@@ -52,7 +52,7 @@ public class EnrollmentController {
 			@RequestParam String courseId,
 			@AuthenticationPrincipal AuthInfo authInfo,
 			Model model
-		) {
+	) {
 		// 1. 단일 또는 다중으로 들어옴(courseId) courseId=1 or courseId=1,2,3
 		String[] courseIdArray = courseId.split(",");
 		Long firstCourseId = Long.valueOf(courseIdArray[0]);
@@ -69,7 +69,7 @@ public class EnrollmentController {
 		String displayTitle;
 
 		// 3. 단일 or 다중 분기처리
-		if(courseIdArray.length == 1) {
+		if (courseIdArray.length == 1) {
 			// [단일 신청] 강의 상세 -> 수강 신청 (또는 장바구니에서 1개만 신청)
 			displayTitle = firstCourseTitle; // 도메인의 실제 강의명 메서드 사용
 		} else {
