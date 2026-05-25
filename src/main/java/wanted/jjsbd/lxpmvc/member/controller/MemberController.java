@@ -92,13 +92,18 @@ public class MemberController {
 		MemberResponse member = memberService.getProfile(authInfo.memberId());
 		model.addAttribute("title", "내 정보");
 		model.addAttribute("member", member);
-		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname(), member.email()));
+		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname()));
 		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 		return "member/edit";
 	}
 
 	@PostMapping("/profile")
-	public String saveProfile(MemberProfileRequest request) {
+	public String saveProfile(@AuthenticationPrincipal AuthInfo authInfo,
+		@Valid @ModelAttribute("memberProfileRequest") MemberProfileRequest request,
+		BindingResult bindingResult) {
+		if (!bindingResult.hasErrors()) {
+			memberService.updateProfile(authInfo.memberId(), request.nickname());
+		}
 		return "redirect:/profile";
 	}
 }
