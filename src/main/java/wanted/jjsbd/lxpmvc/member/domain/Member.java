@@ -67,7 +67,7 @@ public class Member extends BaseEntity {
 	}
 
 	public void updateProfile(String nickname, String profileImg) {
-		DomainValidator.validateNotBlank(nickname);
+		validateNickname(nickname);
 		this.nickname = nickname;
 		this.profileImg = profileImg;
 	}

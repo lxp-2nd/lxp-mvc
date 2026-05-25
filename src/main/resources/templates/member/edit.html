@@ -9,9 +9,20 @@
     </section>
 
     <section class="profile-card">
-        <form th:action="@{/profile}" method="post" class="form-stack">
-            <label>이름<input name="name" th:value="${member.name}"></label>
-            <label>이메일<input name="email" th:value="${member.email}" readonly></label>
+        <form th:action="@{/profile}" th:object="${memberProfileRequest}" method="post" class="form-stack" novalidate>
+            <label>닉네임
+                <input th:field="*{nickname}" placeholder="닉네임 입력" autocomplete="nickname" required minlength="2"
+                       maxlength="20"
+                       th:aria-invalid="${#fields.hasErrors('nickname')} ? 'true' : 'false'"
+                       aria-describedby="nickname-error"
+                       data-error-required="닉네임을 입력해주세요."
+                       data-error-minlength="닉네임은 2자 이상 입력해주세요."
+                       data-error-maxlength="닉네임은 최대 20자까지 입력할 수 있습니다.">
+                <span id="nickname-error" class="field-error" aria-live="polite">
+                    <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></span>
+                </span>
+            </label>
+            <label>이메일<input th:value="${member.email}" readonly></label>
             <p class="helper">이메일은 MVP에서 수정할 수 없습니다.</p>
             <div class="button-row">
                 <button class="btn primary" type="submit">수정 저장</button>
@@ -20,5 +31,49 @@
         </form>
     </section>
 </main>
+<script>
+    (() => {
+        const form = document.querySelector(".form-stack");
+        const nickname = form.querySelector("#nickname");
+
+        const setError = (field, message) => {
+            const error = document.getElementById(field.getAttribute("aria-describedby"));
+            field.setAttribute("aria-invalid", message ? "true" : "false");
+            error.textContent = message;
+        };
+
+        const getMessage = (field) => {
+            if (field.validity.valueMissing) {
+                return field.dataset.errorRequired;
+            }
+
+            if (field.validity.tooShort) {
+                return field.dataset.errorMinlength;
+            }
+
+            if (field.validity.tooLong) {
+                return field.dataset.errorMaxlength;
+            }
+
+            return "";
+        };
+
+        const validateField = (field) => {
+            const message = getMessage(field);
+            setError(field, message);
+            return !message;
+        };
+
+        nickname.addEventListener("blur", () => validateField(nickname));
+        nickname.addEventListener("input", () => validateField(nickname));
+
+        form.addEventListener("submit", (event) => {
+            if (!validateField(nickname)) {
+                event.preventDefault();
+                nickname.focus();
+            }
+        });
+    })();
+</script>
 </body>
 </html>
