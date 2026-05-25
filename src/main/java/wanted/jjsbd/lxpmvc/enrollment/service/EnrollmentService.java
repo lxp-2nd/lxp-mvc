@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
@@ -24,16 +25,19 @@ public class EnrollmentService {
 	private final EnrollmentRepository enrollmentRepository;
 	private final CourseRepository courseRepository;
 	private final MemberRepository memberRepository;
+	private final CartService cartService;
 
 	// 생성자 패턴(@Autowired 제거)
 	public EnrollmentService(
 		EnrollmentRepository enrollmentRepository,
 		MemberRepository memberRepository,
-		CourseRepository courseRepository
+		CourseRepository courseRepository,
+		CartService cartService
 	) {
 		this.enrollmentRepository = enrollmentRepository;
 		this.memberRepository = memberRepository;
 		this.courseRepository = courseRepository;
+		this.cartService = cartService;
 	}
 
 	/**
@@ -113,12 +117,8 @@ public class EnrollmentService {
 			enrolledIds.add(enrollmentId);
 		}
 
-		// [중요] 수강신청이 성공적으로 완료되었으므로, 해당 강의들을 장바구니에서 삭제해야 합니다.
-		// 현재 클래스가 EnrollmentService이므로, CartRepository를 주입받아 지우거나
-		// 외부 CartService의 메서드를 호출하는 방식으로 연결해 주세요.
-		// ex) cartRepository.deleteByLearnerIdAndCourseIdIn(learnerId, courseIds);
-
-		// 장바구니 삭제 확인
+		// 장바구니 삭제(수강생ID, 강의ID들(단일/복수))
+		cartService.deleteCartItemsByCourseIds(learnerId, courseIds);
 
 		return enrolledIds;
 	}

@@ -122,5 +122,28 @@ public class CartService {
 
 		return CartResponse.from(cartItems);
 	}
+
+	/**
+	 * min 추가
+	 * 수강 신청 완료 후, 신청한 강의(courseId)들을 장바구니에서 찾아 소프트 삭제한다.
+	 */
+	@Transactional
+	public void deleteCartItemsByCourseIds(Long memberId, List<Long> courseIds) {
+		if (courseIds == null || courseIds.isEmpty()) {
+			return;
+		}
+
+		// 중복 courseId 제거
+		List<Long> uniqueCourseIds = courseIds.stream()
+			.distinct()
+			.toList();
+
+		// 업데이트된 레포지토리 메서드 호출 (객체 탐색을 통한 조회)
+		List<CartItem> cartItems = cartItemRepository.findCartItemsByCourseIds(memberId, uniqueCourseIds);
+
+		// 장바구니 항목 소프트 삭제 (BaseEntity 또는 CartItem에 정의된 delete() 메서드 호출)
+		cartItems.forEach(CartItem::delete);
+	}
+
 }
 
