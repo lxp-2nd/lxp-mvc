@@ -22,6 +22,16 @@ public class SecuritySessionManager {
 		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 	}
 
+	public void updateSessionNickname(AuthInfo currentAuthInfo, String newNickname, HttpServletRequest servletRequest) {
+		AuthInfo updatedAuthInfo = AuthInfo.from(
+			currentAuthInfo.memberId(),
+			currentAuthInfo.getEmail(),
+			newNickname,
+			currentAuthInfo.role()
+		);
+		loginAndSyncSession(updatedAuthInfo, servletRequest);
+	}
+
 	public void logoutAndInvalidateSession(HttpServletRequest servletRequest) {
 		SecurityContextHolder.clearContext();
 		HttpSession session = servletRequest.getSession(false);

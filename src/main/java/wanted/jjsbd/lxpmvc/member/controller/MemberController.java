@@ -89,21 +89,42 @@ public class MemberController {
 
 	@GetMapping("/profile")
 	public String profile(@AuthenticationPrincipal AuthInfo authInfo, Model model) {
-		MemberResponse member = memberService.getProfile(authInfo.memberId());
-		model.addAttribute("title", "내 정보");
-		model.addAttribute("member", member);
+		MemberResponse member = fillProfileModel(authInfo.memberId(), model);
 		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname()));
-		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 		return "member/edit";
 	}
 
 	@PostMapping("/profile")
-	public String saveProfile(@AuthenticationPrincipal AuthInfo authInfo,
+	public String saveProfile(
+		@AuthenticationPrincipal AuthInfo authInfo,
 		@Valid @ModelAttribute("memberProfileRequest") MemberProfileRequest request,
-		BindingResult bindingResult) {
-		if (!bindingResult.hasErrors()) {
+		BindingResult bindingResult,
+		Model model,
+		HttpServletRequest servletRequest
+	) {
+		if (bindingResult.hasErrors()) {
+			fillProfileModel(authInfo.memberId(), model);
+			log.info("[ProfileFlow] 프로필 수정 검증 실패 - 규칙 위반");
+			return "member/edit";
+		}
+		try {
 			memberService.updateProfile(authInfo.memberId(), request.nickname());
+			securitySessionManager.updateSessionNickname(authInfo, request.nickname(), servletRequest);
+			log.info("[ProfileFlow] 프로필 수정 및 세션 동기화 완료 - 변경된 닉네임: {}", request.nickname());
+		} catch (CustomException e) {
+			log.info("[ProfileFlow] 프로필 수정 비즈니스 예외 발생 - 에러코드: {}", e.getErrorCode());
+			bindingResult.rejectValue("nickname", e.getErrorCode().name(), e.getMessage());
+			fillProfileModel(authInfo.memberId(), model);
+			return "member/edit";
 		}
 		return "redirect:/profile";
+	}
+
+	private MemberResponse fillProfileModel(Long memberId, Model model) {
+		MemberResponse member = memberService.getProfile(memberId);
+		model.addAttribute("title", "내 정보");
+		model.addAttribute("member", member);
+		model.addAttribute("cartCount", cartService.getCart(memberId).cartItems().size());
+		return member;
 	}
 }
