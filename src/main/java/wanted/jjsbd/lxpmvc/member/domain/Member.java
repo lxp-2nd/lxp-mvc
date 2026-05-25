@@ -76,6 +76,10 @@ public class Member extends BaseEntity {
 		return new Member(nickname, email, passwordHash, MemberRole.BASIC, null);
 	}
 
+	public static Member createInstructorMember(String nickname, String email, String passwordHash) {
+		return new Member(nickname, email, passwordHash, MemberRole.INSTRUCTOR, null);
+	}
+
 	public void updateProfile(String nickname, String profileImg) {
 		validateNickname(nickname);
 		this.nickname = nickname;
