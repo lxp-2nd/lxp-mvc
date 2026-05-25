@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
@@ -121,6 +121,22 @@ public class EnrollmentService {
 		cartService.deleteCartItemsByCourseIds(learnerId, courseIds);
 
 		return enrolledIds;
+	}
+
+	/**
+	 * 완료 화면을 위한 수강 이력 단건 조회
+	 * @param learnerId 회원 ID
+	 * @param courseId 강의 ID
+	 * @return 수강 이력 엔티티
+	 */
+	@Transactional(readOnly = true)
+	public Enrollment getCompletedEnrollment(Long learnerId, Long courseId) {
+		return enrollmentRepository.findByLearnerIdAndCourseId(learnerId, courseId)
+			.filter(enrollment -> !enrollment.isDeleted()) // 소프트 딜리트되지 않은 정상 수강 건인지 확인
+			.orElseThrow(() -> new CustomException(
+				ErrorCode.ENROLLMENT_NOT_FOUND,
+				"유효한 수강 이력이 없습니다."
+			));
 	}
 
 }

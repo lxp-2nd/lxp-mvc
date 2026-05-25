@@ -1,4 +1,4 @@
 package wanted.jjsbd.lxpmvc.enrollment.dto;
 
-public record EnrollmentCompleteResponse(String courseId, String courseTitle, String statusText) {
+public record EnrollmentCompleteResponse(String enrollmentId, String courseId, String courseTitle, String statusText) {
 }

@@ -18,6 +18,7 @@ import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
 import wanted.jjsbd.lxpmvc.course.service.CourseService;
+import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
@@ -33,13 +34,11 @@ public class EnrollmentController {
 
 	private final EnrollmentService enrollmentService;
 	private final MockLxpData mockData;
-	private final CourseService courseService;
 
 	@Autowired
-	public EnrollmentController(MockLxpData mockData, EnrollmentService enrollmentService, CourseService courseService) {
+	public EnrollmentController(MockLxpData mockData, EnrollmentService enrollmentService) {
 		this.mockData = mockData;
 		this.enrollmentService = enrollmentService;
-		this.courseService = courseService;
 	}
 
 	/**
@@ -51,27 +50,36 @@ public class EnrollmentController {
 	@GetMapping("/enroll/complete")
 	public String enrollComplete(
 			@RequestParam String courseId,
+			@AuthenticationPrincipal AuthInfo authInfo,
 			Model model
 		) {
 		// 1. 단일 또는 다중으로 들어옴(courseId) courseId=1 or courseId=1,2,3
 		String[] courseIdArray = courseId.split(",");
 		Long firstCourseId = Long.valueOf(courseIdArray[0]);
 
-		Course firstCourse = courseService.getActiveCourseById(firstCourseId);
+		// 2. 등록된 수강에서 조회
+		Enrollment savedEnrollment = enrollmentService.getCompletedEnrollment(
+			authInfo.memberId(),
+			firstCourseId
+		);
+
+		// Enrollment 객체를 통해 연관된 Course의 제목을 가져옴
+		String firstCourseTitle = savedEnrollment.getCourse().getTitle();
 
 		String displayTitle;
 
-		// 2. 단일 or 다중 분기처리
+		// 3. 단일 or 다중 분기처리
 		if(courseIdArray.length == 1) {
 			// [단일 신청] 강의 상세 -> 수강 신청 (또는 장바구니에서 1개만 신청)
-			displayTitle = firstCourse.getTitle(); // 도메인의 실제 강의명 메서드 사용
+			displayTitle = firstCourseTitle; // 도메인의 실제 강의명 메서드 사용
 		} else {
 			// [다중 신청]
-			displayTitle = firstCourse.getTitle() + " 외 " + (courseIdArray.length - 1) + "건";
+			displayTitle = firstCourseTitle + " 외 " + (courseIdArray.length - 1) + "건";
 		}
 
-		// 3. 화면에 전달할 DTO 조립
+		// 3. 화면에 전달할 record
 		EnrollmentCompleteResponse enrollment = new EnrollmentCompleteResponse(
+			savedEnrollment.getId().toString(),
 			String.valueOf(firstCourseId),
 			displayTitle,
 			"신청완료"

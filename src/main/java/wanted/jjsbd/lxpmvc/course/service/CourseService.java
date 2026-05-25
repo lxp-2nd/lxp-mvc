@@ -34,15 +34,4 @@ public class CourseService {
 		/// 3. Entity -> DTO 변환 후 반환
 		return coursePage.map(CourseResponse::of);
 	}
-
-	/**
-	 * 단일 강의 상세 조회
-	 * @param id 강의 ID
-	 * @return 삭제되지 않은 Course 엔티티
-	 * @throws CustomException 강의가 존재하지 않거나 폐강된 경우 예외 발생
-	 */
-	public Course getActiveCourseById(Long id) {
-		return courseRepository.findByIdAndDeletedAtIsNull(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.COURSE_NOT_FOUND));
-	}
 }
