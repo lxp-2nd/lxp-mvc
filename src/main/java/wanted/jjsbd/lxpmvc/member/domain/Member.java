@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,10 @@ import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
-@Table(name = "members")
+@Table(
+	name = "members",
+	uniqueConstraints = @UniqueConstraint(name = "unique_active_email", columnNames = "active_email")
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
@@ -37,8 +41,13 @@ public class Member extends BaseEntity {
 	@Column(nullable = false, length = MAX_NICKNAME_LENGTH)
 	private String nickname;
 
-	@Column(nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
+	@Column(nullable = false, length = MAX_EMAIL_LENGTH)
 	private String email;
+
+	// 탈퇴 회원의 재가입 허용을 위해, 활동 회원 간의 이메일 중복만 체크하는 가상 유니크 필드
+	@Column(name = "active_email", insertable = false, updatable = false)
+	@SuppressWarnings("unused")
+	private String activeEmail;
 
 	@Column(name = "password_hash", nullable = false, length = MAX_PASSWORD_HASH_LENGTH)
 	private String passwordHash;
@@ -70,6 +79,13 @@ public class Member extends BaseEntity {
 		validateNickname(nickname);
 		this.nickname = nickname;
 		this.profileImg = profileImg;
+	}
+
+	public void withdraw() {
+		if (isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
+		delete();
 	}
 
 	private void validateNickname(String nickname) {
