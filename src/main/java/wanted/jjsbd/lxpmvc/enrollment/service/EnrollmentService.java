@@ -134,8 +134,7 @@ public class EnrollmentService {
 		return enrollmentRepository.findByLearnerIdAndCourseId(learnerId, courseId)
 			.filter(enrollment -> !enrollment.isDeleted()) // 소프트 딜리트되지 않은 정상 수강 건인지 확인
 			.orElseThrow(() -> new CustomException(
-				ErrorCode.ENROLLMENT_NOT_FOUND,
-				"유효한 수강 이력이 없습니다."
+				ErrorCode.ENROLLMENT_NOT_FOUND
 			));
 	}
 

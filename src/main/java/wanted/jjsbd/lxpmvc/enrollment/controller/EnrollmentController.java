@@ -55,7 +55,14 @@ public class EnrollmentController {
 	) {
 		// 1. 단일 또는 다중으로 들어옴(courseId) courseId=1 or courseId=1,2,3
 		String[] courseIdArray = courseId.split(",");
-		Long firstCourseId = Long.valueOf(courseIdArray[0]);
+		Long firstCourseId;
+		try {
+			firstCourseId = Long.valueOf(courseIdArray[0]);
+		} catch (RuntimeException e) {
+			throw new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND, "/cart");
+		}
+
+
 
 		// 2. 등록된 수강에서 조회
 		Enrollment savedEnrollment = enrollmentService.getCompletedEnrollment(
