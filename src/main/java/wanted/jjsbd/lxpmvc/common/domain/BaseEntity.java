@@ -38,7 +38,7 @@ public abstract class BaseEntity {
 	}
 
 	public void restore() {
-			this.deletedAt = null;
+		this.deletedAt = null;
 	}
 
 }
