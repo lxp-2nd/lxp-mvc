@@ -1,5 +1,7 @@
 package wanted.jjsbd.lxpmvc.enrollment.controller;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
@@ -78,21 +81,31 @@ public class EnrollmentController {
 	/**
 	 * 장바구니에서 선택한 강의 수강 신청
 	 * @param request
-	 * @param model
+	 * @param authInfo
+	 * @param redirectAttributes
 	 * @return
 	 */
 	@PostMapping("/cart/enroll")
-	public String enrollCart(CartEnrollmentRequest request, Model model) {
-		if (request.courseIds().isEmpty()) {
-			// addCartModel(model);
-			model.addAttribute("validationError", "신청할 강의를 1개 이상 선택해주세요.");
-			return "cart/index";
+	public String enrollCart(
+		CartEnrollmentRequest request,
+		@AuthenticationPrincipal AuthInfo authInfo,
+		RedirectAttributes redirectAttributes
+	) {
+		// 1. 서버 측 안전장치 (프론트에서 JS로 막고 있지만 2차 검증)
+		if (request.isEmpty()) {
+			redirectAttributes.addFlashAttribute("validationError", "신청할 강의를 1개 이상 선택해주세요.");
+			return "redirect:/cart"; // 모델 데이터를 다시 조회하지 않기 위해 리다이렉트 처리 (PRG 패턴)
 		}
 
-		// List 형식으로 수강쪽으로 넘기고, 서비스단에서 내가 호출하는걸로 정리.
+		// 2. 다중 수강신청 서비스 호출
+		enrollmentService.enrollCart(authInfo.memberId(), request.courseIds());
 
-		String courseId = request.courseIds().get(0);
-		return "redirect:/enrollment/complete?courseId=" + courseId;
+		// 3. 완료 화면 리다이렉트를 위해 courseId들을 콤마로 연결
+		String joinedCourseIds = request.courseIds().stream()
+			.map(String::valueOf)
+			.collect(Collectors.joining(","));
+
+		return "redirect:/enrollment/complete?courseId=" + joinedCourseIds;
 	}
 
 	/**

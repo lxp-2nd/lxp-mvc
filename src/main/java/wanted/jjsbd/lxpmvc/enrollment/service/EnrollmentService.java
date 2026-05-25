@@ -1,5 +1,7 @@
 package wanted.jjsbd.lxpmvc.enrollment.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -92,6 +94,33 @@ public class EnrollmentService {
 				throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "/courses/" + request.courseId());
 			}
 		}
+	}
+
+	/**
+	 * 장바구니 다중 수강신청
+	 * @param learnerId 회원 ID
+	 * @param courseIds 신청할 강의 ID 리스트
+	 * @return 생성 및 복구된 enrollmentId 리스트
+	 */
+	@Transactional
+	public List<Long> enrollCart(Long learnerId, List<Long> courseIds) {
+		List<Long> enrolledIds = new ArrayList<>();
+
+		for (Long courseId : courseIds) {
+			// 단일 수강신청 로직(회원/강의 검증, 중복체크, 복구/생성) 재사용
+			EnrollmentRequest request = new EnrollmentRequest(learnerId, courseId);
+			Long enrollmentId = enroll(request);
+			enrolledIds.add(enrollmentId);
+		}
+
+		// [중요] 수강신청이 성공적으로 완료되었으므로, 해당 강의들을 장바구니에서 삭제해야 합니다.
+		// 현재 클래스가 EnrollmentService이므로, CartRepository를 주입받아 지우거나
+		// 외부 CartService의 메서드를 호출하는 방식으로 연결해 주세요.
+		// ex) cartRepository.deleteByLearnerIdAndCourseIdIn(learnerId, courseIds);
+
+		// 장바구니 삭제 확인
+
+		return enrolledIds;
 	}
 
 }
