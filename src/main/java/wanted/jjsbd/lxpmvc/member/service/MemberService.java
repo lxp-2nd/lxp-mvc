@@ -33,23 +33,31 @@ public class MemberService {
 
 	public MemberResponse getProfile(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.filter(existingMember -> !existingMember.isDeleted())
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
 		return MemberResponse.from(member);
 	}
 
 	@Transactional
 	public void updateProfile(Long memberId, String nickname) {
 		Member member = memberRepository.findById(memberId)
-			.filter(existingMember -> !existingMember.isDeleted())
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
 		member.updateProfile(nickname, member.getProfileImg());
 	}
 
 	@Transactional
 	public void withdraw(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_WITHDRAW_FAILED));
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
 		member.withdraw();
 	}
 

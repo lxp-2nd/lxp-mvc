@@ -34,6 +34,7 @@ public enum ErrorCode {
 	MEMBER_PROFILE_IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "MEMBER_013", "프로필 이미지는 5MB 이하로 업로드해주세요."),
 	MEMBER_ALREADY_WITHDRAWN(HttpStatus.CONFLICT, "MEMBER_014", "이미 탈퇴 처리된 계정입니다."),
 	MEMBER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_015", "회원 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
+	MEMBER_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_016", "회원을 찾을 수 없습니다."),
 
 	// Course
 	COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
