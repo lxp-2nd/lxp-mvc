@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
+import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
@@ -46,15 +47,9 @@ public class Enrollment extends BaseEntity {
 
 	// 수강 도메인 생성(정적 팩토리 메서드)
 	public static Enrollment createEnrollment(Member member, Course course) {
-		if (member == null) {
-			// 추후 에러코드 변경 시 수정 예정
-			throw new CustomException(ErrorCode.INVALID_INPUT);
-		}
-
-		if (course == null) {
-			// 추후 에러코드 변경 시 수정 예정
-			throw new CustomException(ErrorCode.INVALID_INPUT);
-		}
+		// 유효성검사(null check)
+		DomainValidator.validateNotNull(member);
+		DomainValidator.validateNotNull(course);
 
 		Enrollment enrollment = new Enrollment(member, course);
 		return enrollment;

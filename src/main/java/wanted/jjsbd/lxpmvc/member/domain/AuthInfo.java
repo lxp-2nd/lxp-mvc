@@ -22,6 +22,10 @@ public record AuthInfo(
 		);
 	}
 
+	public static AuthInfo from(Long memberId, String email, String nickname, MemberRole role) {
+		return new AuthInfo(memberId, email, nickname, role);
+	}
+
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.getSecurityCode()));
 	}

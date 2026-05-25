@@ -1,5 +1,6 @@
 package wanted.jjsbd.lxpmvc.member.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import wanted.jjsbd.lxpmvc.common.MockLxpData;
+import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.config.security.SecuritySessionManager;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
@@ -25,8 +26,8 @@ import wanted.jjsbd.lxpmvc.member.service.MemberService;
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
-	private final MockLxpData mockData;
 	private final MemberService memberService;
+	private final CartService cartService;
 	private final SecuritySessionManager securitySessionManager;
 
 	@GetMapping("/login")
@@ -47,11 +48,17 @@ public class MemberController {
 			AuthInfo authInfo = memberService.login(request);
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.warn("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
+			log.info("[LoginFlow] 로그인 비즈니스 검증 실패 - 에러코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/login";
 		}
 		log.info("[LoginFlow] 메인 강의 페이지(/courses)로 리다이렉트합니다.");
+		return "redirect:/courses";
+	}
+
+	@PostMapping("/logout")
+	public String logout(HttpServletRequest servletRequest) {
+		securitySessionManager.logoutAndInvalidateSession(servletRequest);
 		return "redirect:/courses";
 	}
 
@@ -72,7 +79,7 @@ public class MemberController {
 			AuthInfo authInfo = memberService.signup(request.toMemberCreateRequest());
 			securitySessionManager.loginAndSyncSession(authInfo, servletRequest);
 		} catch (CustomException e) {
-			log.warn("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
+			log.info("[SignupFlow] 회원가입 비즈니스 검증 실패 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("email", e.getErrorCode().name(), e.getMessage());
 			return "member/signup";
 		}
@@ -81,18 +88,43 @@ public class MemberController {
 	}
 
 	@GetMapping("/profile")
-	public String profile(Model model) {
-		MemberResponse member = mockData.member();
-
-		model.addAttribute("title", "내 정보");
-		model.addAttribute("member", member);
-		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.name(), member.email()));
-		model.addAttribute("cartCount", mockData.cartCourses().size());
+	public String profile(@AuthenticationPrincipal AuthInfo authInfo, Model model) {
+		MemberResponse member = fillProfileModel(authInfo.memberId(), model);
+		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname()));
 		return "member/edit";
 	}
 
 	@PostMapping("/profile")
-	public String saveProfile(MemberProfileRequest request) {
+	public String saveProfile(
+		@AuthenticationPrincipal AuthInfo authInfo,
+		@Valid @ModelAttribute("memberProfileRequest") MemberProfileRequest request,
+		BindingResult bindingResult,
+		Model model,
+		HttpServletRequest servletRequest
+	) {
+		if (bindingResult.hasErrors()) {
+			fillProfileModel(authInfo.memberId(), model);
+			log.info("[ProfileFlow] 프로필 수정 검증 실패 - 규칙 위반");
+			return "member/edit";
+		}
+		try {
+			memberService.updateProfile(authInfo.memberId(), request.nickname());
+			securitySessionManager.updateSessionNickname(authInfo, request.nickname(), servletRequest);
+			log.info("[ProfileFlow] 프로필 수정 및 세션 동기화 완료 - 변경된 닉네임: {}", request.nickname());
+		} catch (CustomException e) {
+			log.info("[ProfileFlow] 프로필 수정 비즈니스 예외 발생 - 에러코드: {}", e.getErrorCode());
+			bindingResult.rejectValue("nickname", e.getErrorCode().name(), e.getMessage());
+			fillProfileModel(authInfo.memberId(), model);
+			return "member/edit";
+		}
 		return "redirect:/profile";
+	}
+
+	private MemberResponse fillProfileModel(Long memberId, Model model) {
+		MemberResponse member = memberService.getProfile(memberId);
+		model.addAttribute("title", "내 정보");
+		model.addAttribute("member", member);
+		model.addAttribute("cartCount", cartService.getCart(memberId).cartItems().size());
+		return member;
 	}
 }

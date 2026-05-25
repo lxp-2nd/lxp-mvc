@@ -157,6 +157,27 @@ a {
     gap: 4px;
 }
 
+.menu-panel a,
+.menu-panel form button {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-height: 38px;
+	padding: 0 12px;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: var(--text);
+	font: inherit;
+	font-weight: 700;
+	text-align: left;
+	cursor: pointer;
+}
+
+.menu-panel a:hover,
+.menu-panel form button:hover {
+    background: var(--soft);
+}
 .menu-panel a {
     display: flex;
     align-items: center;
@@ -169,6 +190,10 @@ a {
 
 .menu-panel a:hover {
     background: var(--soft);
+}
+
+.menu-panel form {
+	margin: 0;
 }
 
 .container {
@@ -348,12 +373,26 @@ p {
     gap: 64px;
 }
 
+.cart-layout {
+    align-items: start;
+}
+
+.cart-layout .summary-card {
+    align-self: start;
+    position: sticky;
+    top: 24px;
+}
+
 .panel,
 .player-panel,
 .profile-card,
 .complete-card,
 .summary-card {
     padding: 24px;
+}
+
+.summary-card .btn + .btn {
+    margin-top: 12px;
 }
 
 .curriculum {
