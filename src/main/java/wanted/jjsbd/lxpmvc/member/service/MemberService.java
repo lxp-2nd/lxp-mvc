@@ -39,6 +39,14 @@ public class MemberService {
 	}
 
 	@Transactional
+	public void updateProfile(Long memberId, String nickname) {
+		Member member = memberRepository.findById(memberId)
+			.filter(existingMember -> !existingMember.isDeleted())
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+		member.updateProfile(nickname, member.getProfileImg());
+	}
+
+	@Transactional
 	public AuthInfo signup(MemberCreateRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
 		if (memberRepository.existsByEmail(normalizedEmail)) {
