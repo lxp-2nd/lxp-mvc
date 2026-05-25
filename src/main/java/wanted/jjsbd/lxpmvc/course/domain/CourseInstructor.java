@@ -5,6 +5,8 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Embeddable // JPA에서 다른 엔티티에 삽입될 VO임을 선언
 @Getter
@@ -21,6 +23,12 @@ public class CourseInstructor {
 	private String introduction;
 
 	public CourseInstructor(Long memberId, String name, String introduction) {
+		if (memberId == null) {
+			throw new CustomException(ErrorCode.INSTRUCTOR_MEMBER_ID_REQUIRED);
+		}
+		if (name == null || name.isBlank()) {
+			throw new CustomException(ErrorCode.INSTRUCTOR_NAME_REQUIRED);
+		}
 		this.memberId = memberId;
 		this.name = name;
 		this.introduction = introduction;
