@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,6 +45,7 @@ public class Course extends BaseEntity {
 	private String description;
 
 	@BatchSize(size = 100)
+	@OrderBy("sequence ASC")
 	@OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Section> sections = new ArrayList<>();
 
