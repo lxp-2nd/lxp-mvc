@@ -1,11 +1,14 @@
 package wanted.jjsbd.lxpmvc.cart.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import wanted.jjsbd.lxpmvc.cart.dto.CartResponse;
 import wanted.jjsbd.lxpmvc.cart.service.CartService;
@@ -43,6 +46,18 @@ public class CartController {
 
 		return "redirect:/cart";
 	}
+
+	@PostMapping("/cart/items/delete")
+	public String deleteCartItems(
+		@AuthenticationPrincipal AuthInfo authInfo,
+		@RequestParam(required = false) List<Long> cartItemIds
+	) {
+		cartService.deleteCartItems(authInfo.memberId(), cartItemIds);
+
+		return "redirect:/cart";
+	}
 }
+
+
 
 
