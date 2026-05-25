@@ -15,11 +15,17 @@
         <a class="btn primary" th:href="@{/courses}">강의 보러가기</a>
     </section>
 
-    <section class="cart-layout" th:if="${!#lists.isEmpty(cartItems)}">
+    <form id="cart-form"
+          class="cart-layout"
+          th:if="${!#lists.isEmpty(cartItems)}"
+          method="post"
+          th:attr="data-delete-action=@{/cart/items/delete}, data-enroll-action=@{/cart/enroll}">
         <div class="cart-list">
             <article class="cart-item" th:each="cartItem : ${cartItems}">
                 <input type="checkbox"
                        class="cart-item-checkbox"
+                       th:value="${cartItem.cartItemId}"
+                       th:data-course-id="${cartItem.courseId}"
                        aria-label="강의 선택">
 
                 <div class="small-thumb">
@@ -31,29 +37,44 @@
                     <p th:text="${cartItem.instructor}">강사명</p>
                     <p th:text="${cartItem.courseDescription}">강의 설명</p>
                     <p class="muted"
-                       th:text="${cartItem.createdAt != null ? #temporals.format(cartItem.createdAt, 'yyyy-MM-dd HH:mm') : '담은 일시 없음'}">
+                       th:text="${cartItem.modifiedAt != null ? #temporals.format(cartItem.modifiedAt, 'yyyy-MM-dd HH:mm') : '담은 일시 없음'}">
                         2026-05-19 10:00
                     </p>
                 </div>
 
-                <button class="btn ghost" type="button">삭제</button>
+                <button class="btn ghost"
+                        type="submit"
+                        data-submit-type="delete-one"
+                        th:data-cart-item-id="${cartItem.cartItemId}">
+                    삭제
+                </button>
             </article>
         </div>
 
         <aside class="summary-card">
             <h2>선택 강의</h2>
             <p><strong id="selected-count">0</strong>개 강의 선택됨</p>
-            <button class="btn primary full" type="button">선택 강의 신청</button>
+            <button class="btn ghost full"
+                    type="submit"
+                    data-submit-type="delete-selected">
+                선택 강의 삭제
+            </button>
+            <button class="btn primary full"
+                    type="submit"
+                    data-submit-type="enroll">
+                선택 강의 신청
+            </button>
         </aside>
-    </section>
+    </form>
 </main>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("cart-form");
         const checkboxes = document.querySelectorAll(".cart-item-checkbox");
         const selectedCount = document.getElementById("selected-count");
 
-        if (!selectedCount) {
+        if (!form || !selectedCount) {
             return;
         }
 
@@ -65,6 +86,70 @@
             selectedCount.textContent = count;
         };
 
+        const removePreviousHiddenInputs = () => {
+            form.querySelectorAll(".dynamic-selected-id")
+                .forEach((input) => input.remove());
+        };
+
+        const appendHiddenInput = (name, value) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            input.className = "dynamic-selected-id";
+            form.appendChild(input);
+        };
+
+        form.addEventListener("submit", (event) => {
+            removePreviousHiddenInputs();
+
+            const submitType = event.submitter?.dataset?.submitType;
+
+            if (!submitType) {
+                event.preventDefault();
+                return;
+            }
+
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter((checkbox) => checkbox.checked);
+
+            if (submitType === "delete-selected" && selectedCheckboxes.length === 0) {
+                event.preventDefault();
+                alert("삭제할 강의를 선택해주세요.");
+                return;
+            }
+
+            if (submitType === "enroll" && selectedCheckboxes.length === 0) {
+                event.preventDefault();
+                alert("신청할 강의를 선택해주세요.");
+                return;
+            }
+
+            if (submitType === "delete-one") {
+                form.action = form.dataset.deleteAction;
+                appendHiddenInput("cartItemIds", event.submitter.dataset.cartItemId);
+                return;
+            }
+
+            if (submitType === "delete-selected") {
+                form.action = form.dataset.deleteAction;
+
+                selectedCheckboxes.forEach((checkbox) => {
+                    appendHiddenInput("cartItemIds", checkbox.value);
+                });
+
+                return;
+            }
+
+            if (submitType === "enroll") {
+                form.action = form.dataset.enrollAction;
+
+                selectedCheckboxes.forEach((checkbox) => {
+                    appendHiddenInput("courseIds", checkbox.dataset.courseId);
+                });
+            }
+        });
+
         checkboxes.forEach((checkbox) => {
             checkbox.addEventListener("change", updateSelectedCount);
         });
@@ -74,3 +159,4 @@
 </script>
 </body>
 </html>
+
