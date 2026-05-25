@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.config.security.SecuritySessionManager;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
@@ -118,6 +120,33 @@ public class MemberController {
 			return "member/edit";
 		}
 		return "redirect:/profile";
+	}
+
+	@DeleteMapping("/profile")
+	public String withdrawProfile(
+		@AuthenticationPrincipal AuthInfo authInfo,
+		Model model,
+		HttpServletRequest servletRequest
+	) {
+		try {
+			memberService.withdraw(authInfo.memberId());
+			log.info("[WithdrawFlow] 회원 탈퇴 처리 성공 - memberId: {}", authInfo.memberId());
+		} catch (CustomException e) {
+			if (e.getErrorCode() == ErrorCode.MEMBER_ALREADY_WITHDRAWN) {
+				log.info("[WithdrawFlow] 이미 탈퇴 완료된 회원 - 세션 강제 만료 처리");
+				securitySessionManager.logoutAndInvalidateSession(servletRequest);
+				return "redirect:/login";
+			}
+			if (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAW_FAILED) {
+				log.info("[WithdrawFlow] 내부 정책에 의한 탈퇴 실패 - memberId: {}", authInfo.memberId());
+				fillProfileModel(authInfo.memberId(), model);
+				model.addAttribute("errorMessage", e.getMessage());
+				return "member/edit";
+			}
+			throw e;
+		}
+		securitySessionManager.logoutAndInvalidateSession(servletRequest);
+		return "redirect:/login";
 	}
 
 	private MemberResponse fillProfileModel(Long memberId, Model model) {
