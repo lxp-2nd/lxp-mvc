@@ -19,7 +19,7 @@
                 <img th:src="@{/images/default-course.png}" alt="강의 썸네일"
                      style="width: 100%; height: 100%; object-fit: contain;"></div>
             <a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.title}">서비스 기획 MVP</a>
-            </h2>
+
             <p th:text="${course.instructor}">강사명</p>
             <div class="course-card-footer">
                 <p th:text="|${course.learnerCount}명 수강중|">n명 수강중</p>
