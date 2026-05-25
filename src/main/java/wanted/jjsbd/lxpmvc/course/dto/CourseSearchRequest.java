@@ -2,6 +2,6 @@ package wanted.jjsbd.lxpmvc.course.dto;
 
 public record CourseSearchRequest(String q) {
 	public CourseSearchRequest {
-		q = q == null ? "" : q;
+		q = (q == null || q.isBlank()) ? "" : q.trim();
 	}
 }
