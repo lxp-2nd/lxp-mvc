@@ -10,7 +10,7 @@
 
     <section class="profile-card">
         <form th:action="@{/profile}" method="post" class="form-stack">
-            <label>이름<input name="name" th:value="${member.name}"></label>
+            <label>닉네임<input name="nickname" th:value="${member.nickname}"></label>
             <label>이메일<input name="email" th:value="${member.email}" readonly></label>
             <p class="helper">이메일은 MVP에서 수정할 수 없습니다.</p>
             <div class="button-row">
