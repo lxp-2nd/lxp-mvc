@@ -37,9 +37,9 @@ public abstract class BaseEntity {
 		}
 	}
 
-	// [추가] Soft Delete 복구 메서드
 	public void restore() {
 		this.deletedAt = null;
 	}
 
 }
+

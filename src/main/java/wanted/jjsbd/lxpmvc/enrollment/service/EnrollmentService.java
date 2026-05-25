@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,14 +102,14 @@ public class EnrollmentService {
 	}
 
 	/**
-	 * 수강 목록 조회
+	 * 수강 목록 조회(취소되지 않은 강의 조회)
 	 * @param learnerId
 	 * @return
 	 */
-	public List<EnrollmentCourseResponse> getEnrollments(Long learnerId) {
-		return enrollmentRepository.findAllByLearnerId(learnerId).stream()
-			.map(EnrollmentCourseResponse::from)
-			.collect(Collectors.toList());
+	public Page<EnrollmentCourseResponse> getActiveEnrollments(Long learnerId, Pageable pageable) {
+		Page<Enrollment> enrollmentPage = enrollmentRepository.findActiveEnrollmentsByLearnerId(learnerId, pageable);
+
+		return enrollmentPage.map(EnrollmentCourseResponse::from);
 	}
 
 }

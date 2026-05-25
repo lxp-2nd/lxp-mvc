@@ -3,6 +3,10 @@ package wanted.jjsbd.lxpmvc.enrollment.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,15 +111,17 @@ public class EnrollmentController {
 	@GetMapping("/enrollment")
 	public String enrollment(
 		Model model,
-		@AuthenticationPrincipal AuthInfo authInfo
+		@AuthenticationPrincipal AuthInfo authInfo,
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		// EnrollmentResponse enrollment = mockData.enrollment();
 
 		// 1. 내강의 목록 조회할 회원ID(learnerId)로 조회
-		List<EnrollmentCourseResponse> enrollments = enrollmentService.getEnrollments(authInfo.memberId());
+		Page<EnrollmentCourseResponse> enrollmentPage = enrollmentService.getActiveEnrollments(authInfo.memberId(), pageable);
 
 		model.addAttribute("title", "수강 목록");
-		model.addAttribute("enrollments", enrollments);
+		model.addAttribute("enrollments", enrollmentPage.getContent());
+		model.addAttribute("pageInfo", enrollmentPage);
 		model.addAttribute("cartCount", mockData.cartCourses().size());
 		return "enrollment/list";
 	}
