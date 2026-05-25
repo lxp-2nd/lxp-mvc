@@ -132,7 +132,7 @@ public class MemberController {
 			memberService.withdraw(authInfo.memberId());
 			log.info("[WithdrawFlow] 회원 탈퇴 처리 성공 - memberId: {}", authInfo.memberId());
 		} catch (CustomException e) {
-			if (e.getErrorCode() == ErrorCode.MEMBER_ALREADY_WITHDRAWN) {
+			if (e.getErrorCode() == ErrorCode.MEMBER_ALREADY_WITHDRAWN || e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
 				log.info("[WithdrawFlow] 이미 탈퇴 완료된 회원 - 세션 강제 만료 처리");
 				securitySessionManager.logoutAndInvalidateSession(servletRequest);
 				return "redirect:/login";

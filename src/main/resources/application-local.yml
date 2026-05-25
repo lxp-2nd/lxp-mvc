@@ -1,6 +1,6 @@
 spring:
   mvc:
-    hidden method:
+    hiddenmethod:
       filter:
         enabled: true
   datasource:
