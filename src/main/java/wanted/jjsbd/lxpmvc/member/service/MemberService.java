@@ -23,7 +23,7 @@ public class MemberService {
 
 	public AuthInfo login(LoginRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
-		Member member = memberRepository.findByEmailAndDeletedAtIsNull(normalizedEmail)
+		Member member = memberRepository.findByActiveEmail(normalizedEmail)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INVALID_CREDENTIALS));
 		if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_CREDENTIALS);
@@ -47,9 +47,16 @@ public class MemberService {
 	}
 
 	@Transactional
+	public void withdraw(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_WITHDRAW_FAILED));
+		member.withdraw();
+	}
+
+	@Transactional
 	public AuthInfo signup(MemberCreateRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
-		if (memberRepository.existsByEmail(normalizedEmail)) {
+		if (memberRepository.existsByActiveEmail(normalizedEmail)) {
 			throw new CustomException(ErrorCode.MEMBER_DUPLICATE_EMAIL);
 		}
 		String passwordHash = passwordEncoder.encode(request.password());
