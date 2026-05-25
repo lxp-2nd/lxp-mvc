@@ -1,6 +1,7 @@
 package wanted.jjsbd.lxpmvc.course.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
 
@@ -61,6 +62,10 @@ class CourseRepositoryTest {
 		System.out.println("====== 쿼리 실행 시작 ======");
 		courseRepository.findByIdWithCurriculum(course.getId());
 		System.out.println("====== 쿼리 실행 종료 ======");
+
+		// then
+		assertThatCode(() -> courseRepository.findByIdWithCurriculum(course.getId()))
+			.doesNotThrowAnyException();
 	}
 
 	@Test
