@@ -91,8 +91,8 @@ public class MemberController {
 
 	@GetMapping("/profile")
 	public String profile(@AuthenticationPrincipal AuthInfo authInfo, Model model) {
-		MemberResponse member = fillProfileModel(authInfo.memberId(), model);
-		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname()));
+		fillProfileModel(authInfo, model);
+		model.addAttribute("memberProfileRequest", new MemberProfileRequest(authInfo.nickname()));
 		return "member/edit";
 	}
 
@@ -105,7 +105,7 @@ public class MemberController {
 		HttpServletRequest servletRequest
 	) {
 		if (bindingResult.hasErrors()) {
-			fillProfileModel(authInfo.memberId(), model);
+			fillProfileModel(authInfo, model);
 			log.info("[ProfileFlow] 프로필 수정 검증 실패 - 규칙 위반");
 			return "member/edit";
 		}
@@ -116,7 +116,7 @@ public class MemberController {
 		} catch (CustomException e) {
 			log.info("[ProfileFlow] 프로필 수정 비즈니스 예외 발생 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("nickname", e.getErrorCode().name(), e.getMessage());
-			fillProfileModel(authInfo.memberId(), model);
+			fillProfileModel(authInfo, model);
 			return "member/edit";
 		}
 		return "redirect:/profile";
@@ -139,7 +139,7 @@ public class MemberController {
 			}
 			if (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAW_FAILED) {
 				log.info("[WithdrawFlow] 내부 정책에 의한 탈퇴 실패 - memberId: {}", authInfo.memberId());
-				fillProfileModel(authInfo.memberId(), model);
+				fillProfileModel(authInfo, model);
 				model.addAttribute("errorMessage", e.getMessage());
 				return "member/edit";
 			}
@@ -149,11 +149,9 @@ public class MemberController {
 		return "redirect:/login";
 	}
 
-	private MemberResponse fillProfileModel(Long memberId, Model model) {
-		MemberResponse member = memberService.getProfile(memberId);
+	private void fillProfileModel(AuthInfo authInfo, Model model) {
 		model.addAttribute("title", "내 정보");
-		model.addAttribute("member", member);
-		model.addAttribute("cartCount", cartService.getCart(memberId).cartItems().size());
-		return member;
+		model.addAttribute("member", new MemberResponse(authInfo.nickname(), authInfo.email()));
+		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 	}
 }
