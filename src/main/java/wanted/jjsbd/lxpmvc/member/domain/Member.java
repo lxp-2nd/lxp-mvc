@@ -44,8 +44,9 @@ public class Member extends BaseEntity {
 	@Column(nullable = false, length = MAX_EMAIL_LENGTH)
 	private String email;
 
-	// 탈퇴 회원의 재가입 허용을 위해, 활동 회원 간의 이메일 중복만 체크하는 가상 유니크 필드
-	@Column(name = "active_email", insertable = false, updatable = false)
+	// 탈퇴 회원의 재가입 허용: 활동 중이면 email, 탈퇴 시 NULL (DB generated column, 읽기 전용)
+	@Column(name = "active_email", insertable = false, updatable = false,
+		columnDefinition = "varchar(100) generated always as (case when deleted_at is null then email else null end)")
 	@SuppressWarnings("unused")
 	private String activeEmail;
 
