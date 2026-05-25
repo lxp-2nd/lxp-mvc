@@ -117,7 +117,8 @@ public class EnrollmentController {
 		// EnrollmentResponse enrollment = mockData.enrollment();
 
 		// 1. 내강의 목록 조회할 회원ID(learnerId)로 조회
-		Page<EnrollmentCourseResponse> enrollmentPage = enrollmentService.getActiveEnrollments(authInfo.memberId(), pageable);
+		Page<EnrollmentCourseResponse> enrollmentPage =
+			enrollmentService.getActiveEnrollments(authInfo.memberId(), pageable);
 
 		model.addAttribute("title", "수강 목록");
 		model.addAttribute("enrollments", enrollmentPage.getContent());
