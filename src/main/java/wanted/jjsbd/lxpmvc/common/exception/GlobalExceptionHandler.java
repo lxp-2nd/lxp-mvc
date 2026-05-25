@@ -2,7 +2,9 @@ package wanted.jjsbd.lxpmvc.common.exception;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -10,9 +12,20 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
-	public String handleCustomException(CustomException ex) {
+	public String handleCustomException(
+		CustomException ex,
+		HttpServletRequest request,
+		RedirectAttributes redirectAttributes
+	) {
 		ErrorCode errorCode = ex.getErrorCode();
 		log.debug(errorCode.toString());
+
+		redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+
+		if (ex.getRedirectUrl() != null) {
+			return "redirect:" + ex.getRedirectUrl();
+		}
+
 		return "error/error";
 	}
 

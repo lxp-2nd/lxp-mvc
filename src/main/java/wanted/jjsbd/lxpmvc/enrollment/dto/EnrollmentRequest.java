@@ -1,4 +1,5 @@
 package wanted.jjsbd.lxpmvc.enrollment.dto;
 
-public record EnrollmentRequest(String courseId) {
+public record EnrollmentRequest(Long learnerId, Long courseId) {
+
 }

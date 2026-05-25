@@ -36,10 +36,13 @@ public enum ErrorCode {
 	MEMBER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MEMBER_015", "회원 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_016", "회원을 찾을 수 없습니다."),
 
+
 	// Course
 	COURSE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_001", "강의 제목은 필수/비어있을 수 없습니다."),
 	COURSE_INSTRUCTOR_REQUIRED(HttpStatus.BAD_REQUEST, "COURSE_002", "강사 정보는 필수입니다."),
 	COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_003", "존재하지 않는 강의입니다."),
+	COURSE_ALREADY_WITHDRAWN(HttpStatus.CONFLICT, "COURSE_004", "폐강된 강의입니다."),
+
 	SECTION_COURSE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_001", "소속된 강의 정보는 필수입니다."),
 	SECTION_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "SECTION_002", "섹션 제목은 필수/비어있을 수 없습니다."),
 	SECTION_SEQUENCE_INVALID(HttpStatus.BAD_REQUEST, "SECTION_003", "섹션 순서는 1 이상의 유효한 값이어야 합니다."),
@@ -71,8 +74,6 @@ public enum ErrorCode {
 	private final String code;
 	private final String message;
 }
-
-
 
 
 

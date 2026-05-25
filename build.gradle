@@ -11,8 +11,12 @@ checkstyle {
     configFile = file("${rootDir}/config/checkstyle/naver-checkstyle-rules.xml")
     // 예외 처리 파일 경로도 함께 변경
     configProperties = ["suppressionFile": file("${rootDir}/config/checkstyle/naver-checkstyle-suppressions.xml")]
-    maxWarnings = 0
+    // 1. 규칙을 어겼을 때 빌드를 무조건 실패하게 만듦 (필수)
     ignoreFailures = false
+    // 2. 네이버 컨벤션의 '경고'를 '에러'처럼 취급하여 빌드를 터뜨림 (핵심 필수)
+    maxWarnings = 0
+    // 3. (선택) 콘솔 창에 어떤 규칙을 어겼는지 로그를 자세히 출력해 줌
+    showViolations = true
 }
 
 group = 'wanted.jjsbd'
