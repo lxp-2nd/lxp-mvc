@@ -157,4 +157,12 @@ public class EnrollmentService {
 		return enrollmentPage.map(EnrollmentCourseResponse::from);
 	}
 
+	public boolean isActiveEnrollment(Long learnerId, Long courseId) {
+		if (learnerId == null || courseId == null) {
+			return false;
+		}
+
+		return enrollmentRepository.existsByLearnerIdAndCourseIdAndDeletedAtIsNull(learnerId, courseId);
+	}
+
 }

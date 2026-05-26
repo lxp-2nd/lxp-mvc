@@ -340,6 +340,13 @@ p {
     color: #ffffff;
 }
 
+.btn:disabled {
+    border-color: var(--line);
+    background: #eef1f4;
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
 .btn.ghost {
     color: var(--text);
 }

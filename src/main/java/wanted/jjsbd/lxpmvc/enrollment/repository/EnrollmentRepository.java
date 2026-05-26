@@ -16,6 +16,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
 	boolean existsByLearnerIdAndCourseId(Long learnerId, Long courseId);
 
+	boolean existsByLearnerIdAndCourseIdAndDeletedAtIsNull(Long learnerId, Long courseId);
+
 	// 삭제 여부와 무관하게 특정 회원과 강의에 대한 수강 이력 조회
 	Optional<Enrollment> findByLearnerIdAndCourseId(Long learnerId, Long courseId);
 

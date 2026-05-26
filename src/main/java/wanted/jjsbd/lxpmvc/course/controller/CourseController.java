@@ -13,6 +13,7 @@ import wanted.jjsbd.lxpmvc.course.dto.CourseDetailResponse;
 import wanted.jjsbd.lxpmvc.course.dto.CourseResponse;
 import wanted.jjsbd.lxpmvc.course.dto.CourseSearchRequest;
 import wanted.jjsbd.lxpmvc.course.service.CourseService;
+import wanted.jjsbd.lxpmvc.enrollment.service.EnrollmentService;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 
 @Controller
@@ -20,6 +21,7 @@ import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 public class CourseController {
 
 	private final CourseService courseService;
+	private final EnrollmentService enrollmentService;
 
 	@GetMapping("/")
 	public String home() {
@@ -46,11 +48,18 @@ public class CourseController {
 	}
 
 	@GetMapping("/courses/{courseId}")
-	public String courseDetail(@PathVariable Long courseId, Model model) {
+	public String courseDetail(
+		@PathVariable Long courseId,
+		Model model,
+		@AuthenticationPrincipal AuthInfo authInfo
+	) {
 		CourseDetailResponse courseDetail = courseService.getCourseDetails(courseId);
+		Long memberId = (authInfo != null) ? authInfo.memberId() : null;
+		boolean enrolled = enrollmentService.isActiveEnrollment(memberId, courseId);
 
 		model.addAttribute("title", "강의 상세");
 		model.addAttribute("course", courseDetail);
+		model.addAttribute("enrolled", enrolled);
 
 		return "course/detail";
 	}
