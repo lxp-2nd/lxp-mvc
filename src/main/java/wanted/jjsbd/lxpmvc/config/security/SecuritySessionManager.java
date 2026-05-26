@@ -17,8 +17,8 @@ public class SecuritySessionManager {
 			new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(authenticationToken);
-		servletRequest.changeSessionId();
 		HttpSession session = servletRequest.getSession(true);
+		servletRequest.changeSessionId();
 		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 	}
 
