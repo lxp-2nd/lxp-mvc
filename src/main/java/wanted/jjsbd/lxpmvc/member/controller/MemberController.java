@@ -153,6 +153,6 @@ public class MemberController {
 	private void fillProfileModel(AuthInfo authInfo, Model model) {
 		model.addAttribute("title", "내 정보");
 		model.addAttribute("member", new MemberResponse(authInfo.nickname(), authInfo.email()));
-		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
+		// model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 	}
 }
