@@ -9,6 +9,7 @@ public record CourseDetailResponse(
 	Long id,
 	String title,
 	String description,
+	String thumbnailUrl,
 	String instructorName,
 	String instructorIntro,
 	List<SectionResponse> curriculum
@@ -24,6 +25,7 @@ public record CourseDetailResponse(
 			course.getId(),
 			course.getTitle(),
 			course.getDescription(),
+			course.getThumbnailUrl(),
 			course.getInstructorInfo().getName(),
 			course.getInstructorInfo().getIntroduction(),
 			curriculumList

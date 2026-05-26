@@ -5,7 +5,9 @@
 <div th:replace="~{fragments/header :: appHeader(${title})}"></div>
 <main class="container">
     <section class="detail-hero">
-        <div class="large-thumb">강의 썸네일</div>
+        <div class="large-thumb">
+            <img th:src="${course.thumbnailUrl}" alt="강의 썸네일">
+        </div>
         <div class="detail-copy">
             <h1 th:text="${course.title}">서비스 기획 MVP</h1>
             <p th:text="${course.description}">강의 설명 영역. 강의 목표를 확인한다.</p>
@@ -30,7 +32,7 @@
                    th:each="lesson, stat : ${section.lessons}"
                    th:href="@{/learn/{id}(id=${course.id}, sectionId=${sectionStat.index}, courseMaterialId=${stat.index})}">
                     <span th:text="${#numbers.formatInteger(stat.index + 1, 2) + '. ' + lesson.title}">01. 강의자료 제목</span>
-                    <em th:text="${lesson.type}">동영상</em>
+                    <em th:text="${lesson.type.displayName}">문서</em>
                 </a>
             </div>
         </div>

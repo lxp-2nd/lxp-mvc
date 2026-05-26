@@ -9,6 +9,7 @@ public record CourseResponse(
 	String title,
 	String instructor,
 	String description,
+	String thumbnailUrl,
 	Integer learnerCount,
 	List<SectionResponse> curriculum
 
@@ -20,6 +21,7 @@ public record CourseResponse(
 			course.getTitle(),
 			course.getInstructorInfo().getName(),
 			course.getDescription(),
+			course.getThumbnailUrl(),
 			course.getLearnerCount(),
 			List.of()
 		);

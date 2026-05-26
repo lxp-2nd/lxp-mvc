@@ -28,8 +28,9 @@ public class MockLxpData {
 	}
 
 	public List<CourseResponse> courses() {
-		return List.of(new CourseResponse(1L, "프론트엔드 입문", "강사명", "HTML, CSS, JavaScript 기초를 다룹니다.", 1, curriculum()),
-			new CourseResponse(1L, "백엔드 입문", "강사명", "스프링", 2, curriculum()));
+		return List.of(new CourseResponse(1L, "프론트엔드 입문", "강사명", "HTML, CSS, JavaScript 기초를 다룹니다.",
+				"/images/course1.jpg", 1, curriculum()),
+			new CourseResponse(1L, "백엔드 입문", "강사명", "스프링", "/images/course2.jpg", 2, curriculum()));
 
 	}
 

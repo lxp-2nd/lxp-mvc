@@ -377,6 +377,10 @@ p {
     gap: 64px;
 }
 
+.two-column {
+    align-items: start;
+}
+
 .cart-layout {
     align-items: start;
 }

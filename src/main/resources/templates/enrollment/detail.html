@@ -17,7 +17,7 @@
                 <span>MVP에서는 동영상/문서 유형만 표시합니다.</span>
             </div>
             <div class="button-row">
-                <button class="pill" type="button" th:text="'자료 유형: ' + ${selectedCourseMaterial.type}">자료 유형: 동영상
+                <button class="pill" type="button" th:text="'자료 유형: ' + ${selectedCourseMaterial.type.displayName}">자료 유형: 문서
                 </button>
                 <button class="pill" type="button" th:text="${selectedCourseMaterial.title}">자료명 표시</button>
             </div>
@@ -30,7 +30,7 @@
                    th:each="courseMaterial, stat : ${section.courseMaterials}"
                    th:href="@{/learn/{id}(id=${learning.courseId}, sectionId=${sectionStat.index}, courseMaterialId=${stat.index})}">
                     <span th:text="${#numbers.formatInteger(stat.index + 1, 2) + '. ' + courseMaterial.title}">01. 강의자료 제목</span>
-                    <em th:text="${courseMaterial.type}">동영상</em>
+                    <em th:text="${courseMaterial.type.displayName}">문서</em>
                 </a>
             </div>
         </aside>

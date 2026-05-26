@@ -16,8 +16,6 @@ public record CartItemResponse(
 	LocalDateTime modifiedAt
 ) {
 
-	private static final String DEFAULT_THUMBNAIL_URL = "/images/default-course.png";
-
 	public static CartItemResponse from(CartItem cartItem) {
 		Course course = cartItem.getCourse();
 		CourseInstructor instructor = course.getInstructorInfo();
@@ -28,9 +26,8 @@ public record CartItemResponse(
 			course.getTitle(),
 			instructor.getName(),
 			course.getDescription(),
-			DEFAULT_THUMBNAIL_URL,
+			course.getThumbnailUrl(),
 			cartItem.getModifiedAt()
 		);
 	}
 }
-
