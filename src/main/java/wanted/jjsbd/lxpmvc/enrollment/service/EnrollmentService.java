@@ -74,6 +74,7 @@ public class EnrollmentService {
 		Optional<Enrollment> enrollmentOpt = enrollmentRepository.findByLearnerIdAndCourseId(
 			request.learnerId(), request.courseId());
 
+		Long enrollmentId;
 		if (enrollmentOpt.isPresent()) {
 			Enrollment enrollment = enrollmentOpt.get();
 
@@ -86,7 +87,7 @@ public class EnrollmentService {
 
 			// 3-2. Soft Delete된 데이터가 있는 경우 -> 복구 (Update)
 			enrollment.restore();
-			return enrollment.getId();
+			enrollmentId = enrollment.getId();
 		} else {
 			// 3-3. 기존 데이터가 아예 없는 경우 -> 신규 생성 (Insert)
 			Enrollment enrollment = Enrollment.createEnrollment(learner, course);
@@ -95,7 +96,7 @@ public class EnrollmentService {
 				Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 				enrollmentRepository.flush();
 
-				return savedEnrollment.getId();
+				enrollmentId = savedEnrollment.getId();
 			} catch (DataIntegrityViolationException e) {
 				throw new CustomException(
 					ErrorCode.ENROLLMENT_ALREADY_EXISTS_SKIPPED, "/courses/" + request.courseId());
@@ -104,6 +105,9 @@ public class EnrollmentService {
 				throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "/courses/" + request.courseId());
 			}
 		}
+
+		cartService.deleteCartItemsByCourseIds(request.learnerId(), List.of(request.courseId()));
+		return enrollmentId;
 	}
 
 	/**
