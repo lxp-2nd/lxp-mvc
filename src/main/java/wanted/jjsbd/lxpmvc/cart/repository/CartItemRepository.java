@@ -31,5 +31,17 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 		@Param("memberId") Long memberId,
 		@Param("cartItemIds") List<Long> cartItemIds
 	);
+
+	// min 추가
+	@Query("""
+		SELECT ci FROM CartItem ci
+		WHERE ci.cart.member.id = :memberId
+		AND ci.course.id IN :courseIds
+		AND ci.deletedAt IS NULL
+		""")
+	List<CartItem> findCartItemsByCourseIds(
+		@Param("memberId") Long memberId,
+		@Param("courseIds") List<Long> courseIds
+	);
 }
 

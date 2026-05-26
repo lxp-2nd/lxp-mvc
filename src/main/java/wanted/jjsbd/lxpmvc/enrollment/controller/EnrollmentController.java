@@ -1,5 +1,6 @@
 package wanted.jjsbd.lxpmvc.enrollment.controller;
 
+import java.util.stream.Collectors;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import wanted.jjsbd.lxpmvc.common.MockLxpData;
 import wanted.jjsbd.lxpmvc.common.domain.DomainValidator;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
+import wanted.jjsbd.lxpmvc.course.domain.Course;
+import wanted.jjsbd.lxpmvc.course.service.CourseService;
+import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
@@ -49,10 +54,49 @@ public class EnrollmentController {
 	 * @return
 	 */
 	@GetMapping("/enroll/complete")
-	public String enrollComplete(@RequestParam(required = false, defaultValue = "service-planning") String courseId,
-		Model model) {
-		EnrollmentCompleteRequest request = new EnrollmentCompleteRequest(courseId);
-		EnrollmentCompleteResponse enrollment = mockData.enrollmentComplete(request.courseId());
+	public String enrollComplete(
+			@RequestParam String courseId,
+			@AuthenticationPrincipal AuthInfo authInfo,
+			Model model
+	) {
+		// 1. 단일 또는 다중으로 들어옴(courseId) courseId=1 or courseId=1,2,3
+		String[] courseIdArray = courseId.split(",");
+		Long firstCourseId;
+		try {
+			firstCourseId = Long.valueOf(courseIdArray[0]);
+		} catch (RuntimeException e) {
+			throw new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND, "/cart");
+		}
+
+
+
+		// 2. 등록된 수강에서 조회
+		Enrollment savedEnrollment = enrollmentService.getCompletedEnrollment(
+			authInfo.memberId(),
+			firstCourseId
+		);
+
+		// Enrollment 객체를 통해 연관된 Course의 제목을 가져옴
+		String firstCourseTitle = savedEnrollment.getCourse().getTitle();
+
+		String displayTitle;
+
+		// 3. 단일 or 다중 분기처리
+		if (courseIdArray.length == 1) {
+			// [단일 신청] 강의 상세 -> 수강 신청 (또는 장바구니에서 1개만 신청)
+			displayTitle = firstCourseTitle; // 도메인의 실제 강의명 메서드 사용
+		} else {
+			// [다중 신청]
+			displayTitle = firstCourseTitle + " 외 " + (courseIdArray.length - 1) + "건";
+		}
+
+		// 3. 화면에 전달할 record
+		EnrollmentCompleteResponse enrollment = new EnrollmentCompleteResponse(
+			savedEnrollment.getId().toString(),
+			String.valueOf(firstCourseId),
+			displayTitle,
+			"신청완료"
+		);
 
 		model.addAttribute("title", "수강 신청 완료");
 		model.addAttribute("enrollment", enrollment);
@@ -85,21 +129,31 @@ public class EnrollmentController {
 	/**
 	 * 장바구니에서 선택한 강의 수강 신청
 	 * @param request
-	 * @param model
+	 * @param authInfo
+	 * @param redirectAttributes
 	 * @return
 	 */
 	@PostMapping("/cart/enroll")
-	public String enrollCart(CartEnrollmentRequest request, Model model) {
-		if (request.courseIds().isEmpty()) {
-			// addCartModel(model);
-			model.addAttribute("validationError", "신청할 강의를 1개 이상 선택해주세요.");
-			return "cart/index";
+	public String enrollCart(
+		CartEnrollmentRequest request,
+		@AuthenticationPrincipal AuthInfo authInfo,
+		RedirectAttributes redirectAttributes
+	) {
+		// 1. 서버 측 안전장치 (프론트에서 JS로 막고 있지만 2차 검증)
+		if (request.isEmpty()) {
+			redirectAttributes.addFlashAttribute("validationError", "신청할 강의를 1개 이상 선택해주세요.");
+			return "redirect:/cart"; // 모델 데이터를 다시 조회하지 않기 위해 리다이렉트 처리 (PRG 패턴)
 		}
 
-		// List 형식으로 수강쪽으로 넘기고, 서비스단에서 내가 호출하는걸로 정리.
+		// 2. 다중 수강신청 서비스 호출
+		enrollmentService.enrollCart(authInfo.memberId(), request.courseIds());
 
-		String courseId = request.courseIds().get(0);
-		return "redirect:/enrollment/complete?courseId=" + courseId;
+		// 3. 완료 화면 리다이렉트를 위해 courseId들을 콤마로 연결
+		String joinedCourseIds = request.courseIds().stream()
+			.map(String::valueOf)
+			.collect(Collectors.joining(","));
+
+		return "redirect:/enroll/complete?courseId=" + joinedCourseIds;
 	}
 
 	/**

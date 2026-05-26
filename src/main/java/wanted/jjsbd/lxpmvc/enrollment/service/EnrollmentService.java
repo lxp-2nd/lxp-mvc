@@ -1,5 +1,6 @@
 package wanted.jjsbd.lxpmvc.enrollment.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
@@ -29,16 +31,19 @@ public class EnrollmentService {
 	private final EnrollmentRepository enrollmentRepository;
 	private final CourseRepository courseRepository;
 	private final MemberRepository memberRepository;
+	private final CartService cartService;
 
 	// 생성자 패턴(@Autowired 제거)
 	public EnrollmentService(
 		EnrollmentRepository enrollmentRepository,
 		MemberRepository memberRepository,
-		CourseRepository courseRepository
+		CourseRepository courseRepository,
+		CartService cartService
 	) {
 		this.enrollmentRepository = enrollmentRepository;
 		this.memberRepository = memberRepository;
 		this.courseRepository = courseRepository;
+		this.cartService = cartService;
 	}
 
 	/**
@@ -102,6 +107,42 @@ public class EnrollmentService {
 	}
 
 	/**
+	 * 장바구니 다중 수강신청
+	 * @param learnerId 회원 ID
+	 * @param courseIds 신청할 강의 ID 리스트
+	 * @return 생성 및 복구된 enrollmentId 리스트
+	 */
+	@Transactional
+	public List<Long> enrollCart(Long learnerId, List<Long> courseIds) {
+		List<Long> enrolledIds = new ArrayList<>();
+
+		for (Long courseId : courseIds) {
+			// 단일 수강신청 로직(회원/강의 검증, 중복체크, 복구/생성) 재사용
+			EnrollmentRequest request = new EnrollmentRequest(learnerId, courseId);
+			Long enrollmentId = enroll(request);
+			enrolledIds.add(enrollmentId);
+		}
+
+		// 장바구니 삭제(수강생ID, 강의ID들(단일/복수))
+		cartService.deleteCartItemsByCourseIds(learnerId, courseIds);
+
+		return enrolledIds;
+	}
+
+	/**
+	 * 완료 화면을 위한 수강 이력 단건 조회
+	 * @param learnerId 회원 ID
+	 * @param courseId 강의 ID
+	 * @return 수강 이력 엔티티
+	 */
+	@Transactional(readOnly = true)
+	public Enrollment getCompletedEnrollment(Long learnerId, Long courseId) {
+		return enrollmentRepository.findByLearnerIdAndCourseId(learnerId, courseId)
+			.filter(enrollment -> !enrollment.isDeleted()) // 소프트 딜리트되지 않은 정상 수강 건인지 확인
+			.orElseThrow(() -> new CustomException(ErrorCode.ENROLLMENT_NOT_FOUND));
+  }
+  
+  /**
 	 * 수강 목록 조회(취소되지 않은 강의 조회)
 	 * @param learnerId
 	 * @return
