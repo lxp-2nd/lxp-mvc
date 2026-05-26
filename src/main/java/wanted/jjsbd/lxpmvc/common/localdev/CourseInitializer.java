@@ -1,5 +1,6 @@
-package wanted.jjsbd.lxpmvc.course.config;
+package wanted.jjsbd.lxpmvc.common.localdev;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import wanted.jjsbd.lxpmvc.member.repository.MemberRepository;
 
 @Component
 @RequiredArgsConstructor
-public class DummyDataInitService {
+public class CourseInitializer {
 
 	private final CourseRepository courseRepository;
 	private final MemberRepository memberRepository;
@@ -80,7 +81,13 @@ public class DummyDataInitService {
 		);
 		Course course3 = Course.createCourse(info3, "스프링 부트 실전", "백엔드 개발의 모든 것.");
 
-		courseRepository.saveAll(List.of(course1, course2, course3));
+		List<Course> courses = new ArrayList<>(List.of(course1));
+		for (int index = 1; index <= 10; index++) {
+			courses.add(createCourseLikeCourse1(info1, index));
+		}
+		courses.addAll(List.of(course2, course3));
+
+		courseRepository.saveAll(courses);
 		// ==========================================
 		// 3. 수강 신청 데이터 생성 (기존과 동일)
 		// ==========================================
@@ -90,5 +97,33 @@ public class DummyDataInitService {
 		Enrollment e4 = Enrollment.createEnrollment(student1, course2);
 
 		List.of(e1, e2, e3, e4).forEach(em::persist);
+	}
+
+	private Course createCourseLikeCourse1(CourseInstructor instructorInfo, int index) {
+		Course course = Course.createCourse(
+			instructorInfo,
+			"서비스 기획 MVP " + index,
+			"강의 설명 영역. 강의 목표를 확인한다."
+		);
+
+		Section section1 = Section.createSection(course, "섹션 1. 강의 소개", 1);
+		section1.getMaterials()
+			.add(Material.createMaterial(section1, "01. 강의자료 제목", MaterialType.DOCUMENT,
+				"https://example.com/course-" + index + "/1", 1));
+		section1.getMaterials()
+			.add(Material.createMaterial(section1, "02. 강의자료 제목", MaterialType.DOCUMENT,
+				"https://example.com/course-" + index + "/2", 2));
+		course.getSections().add(section1);
+
+		Section section2 = Section.createSection(course, "섹션 2. 핵심 개념", 2);
+		section2.getMaterials()
+			.add(Material.createMaterial(section2, "01. 강의자료 제목", MaterialType.DOCUMENT,
+				"https://example.com/course-" + index + "/3", 1));
+		section2.getMaterials()
+			.add(Material.createMaterial(section2, "02. 강의자료 제목", MaterialType.DOCUMENT,
+				"https://example.com/course-" + index + "/4", 2));
+		course.getSections().add(section2);
+
+		return course;
 	}
 }

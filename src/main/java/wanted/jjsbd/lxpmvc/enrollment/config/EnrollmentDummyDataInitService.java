@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import wanted.jjsbd.lxpmvc.course.domain.Course;
+import wanted.jjsbd.lxpmvc.course.domain.CourseInstructor;
 import wanted.jjsbd.lxpmvc.course.repository.CourseRepository;
 import wanted.jjsbd.lxpmvc.enrollment.domain.Enrollment;
 import wanted.jjsbd.lxpmvc.enrollment.repository.EnrollmentRepository;
@@ -25,8 +26,8 @@ public class EnrollmentDummyDataInitService {
 		memberRepository.save(frontendInstructor);
 
 		// 2. [독립 데이터] 프론트엔드 강의 세팅
-		Course reactCourse = Course.createCourse(frontendInstructor, "리액트 실전 마스터", "상태 관리부터 성능 최적화까지");
-		Course nextJsCourse = Course.createCourse(frontendInstructor, "Next.js 완벽 가이드", "SSR과 SEO 정복하기");
+		Course reactCourse = Course.createCourse(new CourseInstructor(frontendInstructor.getId(), "name", "description"), "리액트 실전 마스터", "상태 관리부터 성능 최적화까지");
+		Course nextJsCourse = Course.createCourse(new CourseInstructor(frontendInstructor.getId(), "name", "description"), "Next.js 완벽 가이드", "SSR과 SEO 정복하기");
 		courseRepository.save(reactCourse);
 		courseRepository.save(nextJsCourse);
 
