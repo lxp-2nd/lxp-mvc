@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,10 @@ import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 
 @Entity
-@Table(name = "members")
+@Table(
+	name = "members",
+	uniqueConstraints = @UniqueConstraint(name = "unique_active_email", columnNames = "active_email")
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
@@ -37,8 +41,14 @@ public class Member extends BaseEntity {
 	@Column(nullable = false, length = MAX_NICKNAME_LENGTH)
 	private String nickname;
 
-	@Column(nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
+	@Column(nullable = false, length = MAX_EMAIL_LENGTH)
 	private String email;
+
+	// 탈퇴 회원의 재가입 허용: 활동 중이면 email, 탈퇴 시 NULL (DB generated column, 읽기 전용)
+	@Column(name = "active_email", insertable = false, updatable = false,
+		columnDefinition = "varchar(100) generated always as (case when deleted_at is null then email else null end)")
+	@SuppressWarnings("unused")
+	private String activeEmail;
 
 	@Column(name = "password_hash", nullable = false, length = MAX_PASSWORD_HASH_LENGTH)
 	private String passwordHash;
@@ -66,10 +76,21 @@ public class Member extends BaseEntity {
 		return new Member(nickname, email, passwordHash, MemberRole.BASIC, null);
 	}
 
+	public static Member createInstructorMember(String nickname, String email, String passwordHash) {
+		return new Member(nickname, email, passwordHash, MemberRole.INSTRUCTOR, null);
+	}
+
 	public void updateProfile(String nickname, String profileImg) {
 		validateNickname(nickname);
 		this.nickname = nickname;
 		this.profileImg = profileImg;
+	}
+
+	public void withdraw() {
+		if (isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
+		delete();
 	}
 
 	private void validateNickname(String nickname) {

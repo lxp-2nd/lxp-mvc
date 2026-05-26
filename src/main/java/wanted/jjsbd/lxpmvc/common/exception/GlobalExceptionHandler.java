@@ -20,11 +20,17 @@ public class GlobalExceptionHandler {
 		ErrorCode errorCode = ex.getErrorCode();
 		log.debug(errorCode.toString());
 
-		redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-
 		if (ex.getRedirectUrl() != null) {
-			return "redirect:" + ex.getRedirectUrl();
+			redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+
+			String redirectUrl = ex.getRedirectUrl();
+			if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+				return "redirect:" + redirectUrl;
+			}
+			log.warn("허용되지 않은 redirectUrl: {}", redirectUrl);
+			return "error/error";
 		}
+		request.setAttribute("errorMessage", ex.getErrorCode().getMessage());
 
 		return "error/error";
 	}
