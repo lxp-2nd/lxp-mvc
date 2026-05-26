@@ -297,6 +297,10 @@ p {
     object-fit: contain;
 }
 
+.small-thumb img {
+    object-fit: cover;
+}
+
 .large-thumb {
     display: grid;
     place-items: center;

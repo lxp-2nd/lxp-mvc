@@ -92,7 +92,7 @@ public class MockLxpData {
 	private EnrollmentCourseResponse enrollmentCourse(String courseId) {
 		CourseResponse course = findCourse(courseId);
 		return new EnrollmentCourseResponse("enrollment-" + course.id(), String.valueOf(course.id()), course.title(),
-			course.instructor(), "신청됨");
+			course.instructor(), course.thumbnailUrl(), "신청됨");
 	}
 
 	private LearningCourseMaterialResponse selectedCourseMaterial(List<LearningSectionResponse> sections, int sectionId,

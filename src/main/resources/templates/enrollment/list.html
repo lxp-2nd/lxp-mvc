@@ -11,7 +11,9 @@
 
     <section class="enrolled-list">
         <article class="enrolled-item" th:each="enrollment : ${enrollments}">
-            <div class="small-thumb"></div>
+            <div class="small-thumb">
+                <img th:src="${enrollment.thumbnailUrl}" alt="강의 썸네일">
+            </div>
             <div>
                 <h2 th:text="${enrollment.courseTitle}">서비스 기획 MVP</h2>
                 <p><span th:text="${enrollment.instructor}">강사명</span> · <span

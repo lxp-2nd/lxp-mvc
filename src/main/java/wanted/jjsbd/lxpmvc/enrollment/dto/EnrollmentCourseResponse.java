@@ -9,6 +9,7 @@ public record EnrollmentCourseResponse(
 	String courseId,
 	String courseTitle,
 	String instructor,
+	String thumbnailUrl,
 	String createdAt
 ) {
 
@@ -24,6 +25,7 @@ public record EnrollmentCourseResponse(
 			String.valueOf(enrollment.getCourse().getId()),
 			enrollment.getCourse().getTitle(),        // Course 엔티티의 실제 필드명에 맞게 수정 필요
 			enrollment.getCourse().getInstructorInfo().getName(),   // Course 엔티티의 실제 필드명에 맞게 수정 필요
+			enrollment.getCourse().getThumbnailUrl(),
 			formattedDate
 		);
 	}
