@@ -117,7 +117,7 @@ public class EnrollmentController {
 		enrollmentService.enroll(request);
 
 		// 성공 -> 강의 완료 화면
-		return "redirect:/enrollment/complete?courseId=" + request.courseId();
+		return "redirect:/enroll/complete?courseId=" + request.courseId();
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class EnrollmentController {
 			.map(String::valueOf)
 			.collect(Collectors.joining(","));
 
-		return "redirect:/enrollment/complete?courseId=" + joinedCourseIds;
+		return "redirect:/enroll/complete?courseId=" + joinedCourseIds;
 	}
 
 	/**
