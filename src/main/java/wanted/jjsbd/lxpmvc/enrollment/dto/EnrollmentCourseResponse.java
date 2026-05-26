@@ -23,7 +23,7 @@ public record EnrollmentCourseResponse(
 			String.valueOf(enrollment.getId()),
 			String.valueOf(enrollment.getCourse().getId()),
 			enrollment.getCourse().getTitle(),        // Course 엔티티의 실제 필드명에 맞게 수정 필요
-			enrollment.getCourse().getInstructor().getNickname(),   // Course 엔티티의 실제 필드명에 맞게 수정 필요
+			enrollment.getCourse().getInstructorInfo().getName(),   // Course 엔티티의 실제 필드명에 맞게 수정 필요
 			formattedDate
 		);
 	}
