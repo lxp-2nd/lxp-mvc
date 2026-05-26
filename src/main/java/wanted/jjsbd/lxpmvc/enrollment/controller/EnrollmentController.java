@@ -1,6 +1,12 @@
 package wanted.jjsbd.lxpmvc.enrollment.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +22,7 @@ import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.enrollment.dto.CartEnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCompleteResponse;
+import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentCourseResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentRequest;
 import wanted.jjsbd.lxpmvc.enrollment.dto.EnrollmentResponse;
 import wanted.jjsbd.lxpmvc.enrollment.dto.LearningRequest;
@@ -29,7 +36,7 @@ public class EnrollmentController {
 	private final EnrollmentService enrollmentService;
 	private final MockLxpData mockData;
 
-	@Autowired
+	// @Autowired 생성자
 	public EnrollmentController(MockLxpData mockData, EnrollmentService enrollmentService) {
 		this.mockData = mockData;
 		this.enrollmentService = enrollmentService;
@@ -72,7 +79,7 @@ public class EnrollmentController {
 		enrollmentService.enroll(request);
 
 		// 성공 -> 강의 완료 화면
-		return "redirect:/enrollment/complete?courseId=" + request.courseId();
+		return "redirect:/enroll/complete?courseId=" + request.courseId();
 	}
 
 	/**
@@ -98,14 +105,24 @@ public class EnrollmentController {
 	/**
 	 * 수강 목록 화면 조회
 	 * @param model
+	 * @param authInfo
 	 * @return
 	 */
 	@GetMapping("/enrollment")
-	public String enrollment(Model model) {
-		EnrollmentResponse enrollment = mockData.enrollment();
+	public String enrollment(
+		Model model,
+		@AuthenticationPrincipal AuthInfo authInfo,
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		// EnrollmentResponse enrollment = mockData.enrollment();
+
+		// 1. 내강의 목록 조회할 회원ID(learnerId)로 조회
+		Page<EnrollmentCourseResponse> enrollmentPage =
+			enrollmentService.getActiveEnrollments(authInfo.memberId(), pageable);
 
 		model.addAttribute("title", "수강 목록");
-		model.addAttribute("enrollments", enrollment.enrollments());
+		model.addAttribute("enrollments", enrollmentPage.getContent());
+		model.addAttribute("pageInfo", enrollmentPage);
 		model.addAttribute("cartCount", mockData.cartCourses().size());
 		return "enrollment/list";
 	}
