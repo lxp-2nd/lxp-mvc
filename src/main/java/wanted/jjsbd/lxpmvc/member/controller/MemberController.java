@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import wanted.jjsbd.lxpmvc.cart.service.CartService;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
+import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
 import wanted.jjsbd.lxpmvc.config.security.SecuritySessionManager;
 import wanted.jjsbd.lxpmvc.member.domain.AuthInfo;
 import wanted.jjsbd.lxpmvc.member.dto.LoginRequest;
@@ -89,8 +91,8 @@ public class MemberController {
 
 	@GetMapping("/profile")
 	public String profile(@AuthenticationPrincipal AuthInfo authInfo, Model model) {
-		MemberResponse member = fillProfileModel(authInfo.memberId(), model);
-		model.addAttribute("memberProfileRequest", new MemberProfileRequest(member.nickname()));
+		fillProfileModel(authInfo, model);
+		model.addAttribute("memberProfileRequest", new MemberProfileRequest(authInfo.nickname()));
 		return "member/edit";
 	}
 
@@ -103,7 +105,7 @@ public class MemberController {
 		HttpServletRequest servletRequest
 	) {
 		if (bindingResult.hasErrors()) {
-			fillProfileModel(authInfo.memberId(), model);
+			fillProfileModel(authInfo, model);
 			log.info("[ProfileFlow] 프로필 수정 검증 실패 - 규칙 위반");
 			return "member/edit";
 		}
@@ -114,17 +116,43 @@ public class MemberController {
 		} catch (CustomException e) {
 			log.info("[ProfileFlow] 프로필 수정 비즈니스 예외 발생 - 에러코드: {}", e.getErrorCode());
 			bindingResult.rejectValue("nickname", e.getErrorCode().name(), e.getMessage());
-			fillProfileModel(authInfo.memberId(), model);
+			fillProfileModel(authInfo, model);
 			return "member/edit";
 		}
 		return "redirect:/profile";
 	}
 
-	private MemberResponse fillProfileModel(Long memberId, Model model) {
-		MemberResponse member = memberService.getProfile(memberId);
+	@DeleteMapping("/profile")
+	public String withdrawProfile(
+		@AuthenticationPrincipal AuthInfo authInfo,
+		Model model,
+		HttpServletRequest servletRequest
+	) {
+		try {
+			memberService.withdraw(authInfo.memberId());
+			log.info("[WithdrawFlow] 회원 탈퇴 처리 성공 - memberId: {}", authInfo.memberId());
+		} catch (CustomException e) {
+			if (e.getErrorCode() == ErrorCode.MEMBER_ALREADY_WITHDRAWN
+				|| e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
+				log.info("[WithdrawFlow] 이미 탈퇴 완료된 회원 - 세션 강제 만료 처리");
+				securitySessionManager.logoutAndInvalidateSession(servletRequest);
+				return "redirect:/login";
+			}
+			if (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAW_FAILED) {
+				log.info("[WithdrawFlow] 내부 정책에 의한 탈퇴 실패 - memberId: {}", authInfo.memberId());
+				fillProfileModel(authInfo, model);
+				model.addAttribute("errorMessage", e.getMessage());
+				return "member/edit";
+			}
+			throw e;
+		}
+		securitySessionManager.logoutAndInvalidateSession(servletRequest);
+		return "redirect:/login";
+	}
+
+	private void fillProfileModel(AuthInfo authInfo, Model model) {
 		model.addAttribute("title", "내 정보");
-		model.addAttribute("member", member);
-		model.addAttribute("cartCount", cartService.getCart(memberId).cartItems().size());
-		return member;
+		model.addAttribute("member", new MemberResponse(authInfo.nickname(), authInfo.email()));
+		model.addAttribute("cartCount", cartService.getCart(authInfo.memberId()).cartItems().size());
 	}
 }

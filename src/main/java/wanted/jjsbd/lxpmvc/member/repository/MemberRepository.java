@@ -8,7 +8,7 @@ import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-	Optional<Member> findByEmailAndDeletedAtIsNull(String email);
+	Optional<Member> findByActiveEmail(String activeEmail);
 
-	boolean existsByEmail(String email);
+	boolean existsByActiveEmail(String activeEmail);
 }

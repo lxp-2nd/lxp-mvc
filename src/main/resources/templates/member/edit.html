@@ -9,7 +9,9 @@
     </section>
 
     <section class="profile-card">
-        <form th:action="@{/profile}" th:object="${memberProfileRequest}" method="post" class="form-stack" novalidate>
+        <p class="field-error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+        <form id="profile-form" th:action="@{/profile}" th:object="${memberProfileRequest}" method="post"
+              class="form-stack" novalidate>
             <label>닉네임
                 <input th:field="*{nickname}" placeholder="닉네임 입력" autocomplete="nickname" required minlength="2"
                        maxlength="20"
@@ -24,11 +26,13 @@
             </label>
             <label>이메일<input th:value="${member.email}" readonly></label>
             <p class="helper">이메일은 MVP에서 수정할 수 없습니다.</p>
-            <div class="button-row">
-                <button class="btn primary" type="submit">수정 저장</button>
-                <a class="btn ghost" th:href="@{/login}">로그아웃</a>
-            </div>
         </form>
+        <div class="button-row">
+            <form th:action="@{/profile}" th:method="delete" method="post">
+                <button class="btn ghost" type="submit">회원 탈퇴</button>
+            </form>
+            <button class="btn primary" type="submit" form="profile-form">수정 저장</button>
+        </div>
     </section>
 </main>
 <script>

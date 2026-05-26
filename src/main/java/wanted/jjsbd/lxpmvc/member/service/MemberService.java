@@ -23,7 +23,7 @@ public class MemberService {
 
 	public AuthInfo login(LoginRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
-		Member member = memberRepository.findByEmailAndDeletedAtIsNull(normalizedEmail)
+		Member member = memberRepository.findByActiveEmail(normalizedEmail)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INVALID_CREDENTIALS));
 		if (!passwordEncoder.matches(request.password(), member.getPasswordHash())) {
 			throw new CustomException(ErrorCode.MEMBER_INVALID_CREDENTIALS);
@@ -33,23 +33,38 @@ public class MemberService {
 
 	public MemberResponse getProfile(Long memberId) {
 		Member member = memberRepository.findById(memberId)
-			.filter(existingMember -> !existingMember.isDeleted())
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
 		return MemberResponse.from(member);
 	}
 
 	@Transactional
 	public void updateProfile(Long memberId, String nickname) {
 		Member member = memberRepository.findById(memberId)
-			.filter(existingMember -> !existingMember.isDeleted())
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN));
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
 		member.updateProfile(nickname, member.getProfileImg());
+	}
+
+	@Transactional
+	public void withdraw(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		if (member.isDeleted()) {
+			throw new CustomException(ErrorCode.MEMBER_ALREADY_WITHDRAWN);
+		}
+		member.withdraw();
 	}
 
 	@Transactional
 	public AuthInfo signup(MemberCreateRequest request) {
 		String normalizedEmail = request.getNormalizedEmail();
-		if (memberRepository.existsByEmail(normalizedEmail)) {
+		if (memberRepository.existsByActiveEmail(normalizedEmail)) {
 			throw new CustomException(ErrorCode.MEMBER_DUPLICATE_EMAIL);
 		}
 		String passwordHash = passwordEncoder.encode(request.password());
