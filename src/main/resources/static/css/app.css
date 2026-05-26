@@ -469,6 +469,58 @@ a.lesson:hover span {
     font-weight: 700;
 }
 
+.error-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 48px 20px;
+}
+
+.error-card {
+    width: min(560px, 100%);
+    padding: 40px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+}
+
+.error-status {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.error-code-box {
+    display: grid;
+    gap: 6px;
+    padding: 18px;
+    margin: 24px 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--soft);
+}
+
+.error-code-box span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.error-code-box strong {
+    color: var(--text);
+    font-size: 24px;
+}
+
+.error-message {
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 700;
+}
+
 .auth-page {
     min-height: 100vh;
     display: grid;

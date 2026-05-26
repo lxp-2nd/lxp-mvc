@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${title})}"></head>
+<body>
+<div th:replace="~{fragments/header :: appHeader(${title})}"></div>
+<main class="error-page">
+	<section class="error-card">
+		<p class="error-status">
+			<span th:text="${statusCode}">500</span>
+			<span th:text="${statusReason}">Internal Server Error</span>
+		</p>
+		<h1>요청을 처리할 수 없습니다.</h1>
+		<div class="error-code-box">
+			<span>HTTP 상태 코드</span>
+			<strong th:text="${statusCode}">500</strong>
+		</div>
+		<p class="error-message" th:text="${errorMessage}">서버 내부 오류가 발생했습니다.</p>
+		<p class="muted" th:if="${requestUri}" th:text="'요청 경로: ' + ${requestUri}">요청 경로: /courses</p>
+		<div class="button-row">
+			<a class="btn primary" th:href="@{/courses}">강의 목록</a>
+			<a class="btn ghost" href="javascript:history.back()">이전 페이지</a>
+		</div>
+	</section>
+</main>
+</body>
+</html>

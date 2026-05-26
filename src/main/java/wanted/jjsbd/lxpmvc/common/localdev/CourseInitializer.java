@@ -37,7 +37,11 @@ public class CourseInitializer {
 		Member student2 = Member.createBasicMember("학생B", "student2@example.com", "pw123!");
 		Member student3 = Member.createBasicMember("학생C", "student3@example.com", "pw123!");
 
-		memberRepository.saveAll(List.of(instructor, student1, student2, student3));
+		List<Member> temporaryInstructors = createTemporaryInstructors();
+		List<Member> members = new ArrayList<>(List.of(instructor, student1, student2, student3));
+		members.addAll(temporaryInstructors);
+
+		memberRepository.saveAll(members);
 
 		// ==========================================
 		// 2. 강의 데이터 생성 (★새로운 VO 기반으로 강사 소개글 직접 주입★)
@@ -83,7 +87,7 @@ public class CourseInitializer {
 
 		List<Course> courses = new ArrayList<>(List.of(course1));
 		for (int index = 1; index <= 10; index++) {
-			courses.add(createCourseLikeCourse1(info1, index));
+			courses.add(createCourseLikeCourse1(temporaryInstructors.get(index - 1), index));
 		}
 		courses.addAll(List.of(course2, course3));
 
@@ -99,7 +103,24 @@ public class CourseInitializer {
 		List.of(e1, e2, e3, e4).forEach(em::persist);
 	}
 
-	private Course createCourseLikeCourse1(CourseInstructor instructorInfo, int index) {
+	private List<Member> createTemporaryInstructors() {
+		List<Member> instructors = new ArrayList<>();
+		for (int index = 1; index <= 10; index++) {
+			instructors.add(Member.createInstructorMember(
+				"임시강사" + index,
+				"temp-instructor-" + index + "@example.com",
+				"dummyPassword123!"
+			));
+		}
+		return instructors;
+	}
+
+	private Course createCourseLikeCourse1(Member instructor, int index) {
+		CourseInstructor instructorInfo = new CourseInstructor(
+			instructor.getId(),
+			instructor.getNickname(),
+			instructor.getNickname() + "입니다. 서비스 기획 MVP 실습 과정을 담당합니다."
+		);
 		Course course = Course.createCourse(
 			instructorInfo,
 			"서비스 기획 MVP " + index,
