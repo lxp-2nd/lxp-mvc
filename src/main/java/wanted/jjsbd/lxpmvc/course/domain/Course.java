@@ -1,13 +1,20 @@
 package wanted.jjsbd.lxpmvc.course.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Formula;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +22,6 @@ import lombok.NoArgsConstructor;
 import wanted.jjsbd.lxpmvc.common.domain.BaseEntity;
 import wanted.jjsbd.lxpmvc.common.exception.CustomException;
 import wanted.jjsbd.lxpmvc.common.exception.ErrorCode;
-import wanted.jjsbd.lxpmvc.member.domain.Member;
 
 @Entity
 @Getter
@@ -28,9 +34,9 @@ public class Course extends BaseEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "instructor_id", nullable = false)
-	private Member instructor;
+	// ✅ 팀장님 안: 강사 정보를 내 도메인 내의 VO(@Embedded)로 관리
+	@Embedded
+	private CourseInstructor instructorInfo;
 
 	@Column(name = "title", nullable = false, length = 200)
 	private String title;
@@ -38,15 +44,22 @@ public class Course extends BaseEntity {
 	@Column(name = "description", length = 255)
 	private String description;
 
-	/// 1. 실제 데이터를 넣는 생성자는 private으로 숨겨서, 외부에서 new Course()를 마음대로 못하게 막습니다.
-	private Course(Member instructor, String title, String description) {
-		this.instructor = instructor;
+	@BatchSize(size = 100)
+	@OrderBy("sequence ASC")
+	@OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<Section> sections = new ArrayList<>();
+
+	// 테이블의 컬럼이 생기는 것 아님. JPA
+	@Formula("(SELECT COUNT(*) FROM enrollments e WHERE e.course_id = id)")
+	private Integer learnerCount;
+
+	private Course(CourseInstructor instructor, String title, String description) {
+		this.instructorInfo = instructor;
 		this.title = title;
 		this.description = description;
 	}
 
-	/// 2. 정적 팩토리 메서드 (Static Factory Method)
-	public static Course createCourse(Member instructor, String title, String description) {
+	public static Course createCourse(CourseInstructor instructor, String title, String description) {
 		validateCourseTitle(title);
 		if (instructor == null) {
 			throw new CustomException(ErrorCode.COURSE_INSTRUCTOR_REQUIRED);

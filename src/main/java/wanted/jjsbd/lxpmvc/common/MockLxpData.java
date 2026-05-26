@@ -82,7 +82,7 @@ public class MockLxpData {
 	}
 
 	private List<SectionResponse> curriculum() {
-		return List.of(new SectionResponse("섹션 1. 강의 소개", List.of(new LessonResponse("강의자료 제목", MaterialType.VIDEO),
+		return List.of(new SectionResponse("섹션 1. 강의 소개", List.of(new LessonResponse("강의자료 제목", MaterialType.DOCUMENT),
 			new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))), new SectionResponse("섹션 2. 핵심 개념",
 			List.of(new LessonResponse("강의자료 제목", MaterialType.DOCUMENT),
 				new LessonResponse("강의자료 제목", MaterialType.DOCUMENT))));

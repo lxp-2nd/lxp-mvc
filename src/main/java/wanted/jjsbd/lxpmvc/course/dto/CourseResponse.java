@@ -18,9 +18,9 @@ public record CourseResponse(
 		return new CourseResponse(
 			course.getId(),
 			course.getTitle(),
-			course.getInstructor().getNickname(),
+			course.getInstructorInfo().getName(),
 			course.getDescription(),
-			null,
+			course.getLearnerCount(),
 			List.of()
 		);
 	}

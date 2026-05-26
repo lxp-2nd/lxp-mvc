@@ -284,6 +284,7 @@ p {
     place-items: center;
     height: 100px;
     margin-bottom: 18px;
+    overflow: hidden;
 }
 
 .large-thumb {
