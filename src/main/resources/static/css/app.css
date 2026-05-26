@@ -7,6 +7,7 @@
     --muted: #6c7480;
     --brand: #00b96b;
     --primary: #202329;
+    --course-thumb-ratio: 508 / 235;
 }
 
 * {
@@ -282,28 +283,31 @@ p {
 .thumb {
     display: grid;
     place-items: center;
-    height: 100px;
+    aspect-ratio: var(--course-thumb-ratio);
     margin-bottom: 18px;
     overflow: hidden;
+}
+
+.thumb img,
+.large-thumb img,
+.small-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .large-thumb {
     display: grid;
     place-items: center;
-    min-height: 235px;
+    aspect-ratio: var(--course-thumb-ratio);
+    min-width: 0;
 }
 
 .small-thumb {
-    background: none;
-    border: none;
+    flex: 0 0 180px;
+    aspect-ratio: var(--course-thumb-ratio);
     overflow: hidden;
-}
-
-.small-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
 }
 
 .card-actions {
@@ -618,5 +622,9 @@ input[aria-invalid="true"]:focus {
         align-items: flex-start;
         flex-wrap: wrap;
         padding: 18px;
+    }
+
+    .small-thumb {
+        flex-basis: min(100%, 240px);
     }
 }
