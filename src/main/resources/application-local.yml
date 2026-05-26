@@ -20,3 +20,9 @@ spring:
         use_sql_comments: true
     hibernate:
       ddl-auto: create
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 365d
+          cache-public: true
