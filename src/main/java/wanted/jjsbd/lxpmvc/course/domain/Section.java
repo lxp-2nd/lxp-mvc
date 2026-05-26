@@ -1,5 +1,11 @@
 package wanted.jjsbd.lxpmvc.course.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.BatchSize;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
@@ -44,6 +51,10 @@ public class Section extends BaseEntity {
 
 	@Column(name = "sequence", nullable = false)
 	private Integer sequence;
+
+	@BatchSize(size = 100)
+	@OneToMany(mappedBy = "section", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<Material> materials = new ArrayList<>();
 
 	private Section(Course course, String title, Integer sequence) {
 		this.course = course;
