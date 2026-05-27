@@ -156,4 +156,4 @@ src/main/java/wanted/jjsbd/lxpmvc
 
 ## 발표 자료
 
-[발표자료](https://www.miricanvas.com/v2/ko/design2/07c3dae4-acbe-4574-acb2-904e681ae98c?location=design&type=copy_link&access=direct)
+[발표자료](https://www.miricanvas.com/v2/ko/design2/v/07c3dae4-acbe-4574-acb2-904e681ae98c)
